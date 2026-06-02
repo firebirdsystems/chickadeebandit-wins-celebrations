@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Wins &amp; Celebrations</title>
+  <base href="/run/wins-celebrations/" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:           var(--hub-bg, #f9fafb);
+      --card:         var(--hub-surface, #ffffff);
+      --border:       var(--hub-border, #e5e7eb);
+      --border-mid:   var(--hub-border, #d1d5db);
+      --text:         var(--hub-text, #111827);
+      --muted:        var(--hub-text-muted, #6b7280);
+      --accent:       var(--hub-primary, #111827);
+      --accent-hover: var(--hub-primary-hover, #374151);
+      --radius:       var(--hub-radius, 0.5rem);
+      --shadow:       0 1px 3px rgba(0,0,0,.07);
+      --shadow-md:    0 4px 12px rgba(0,0,0,.1);
+      --gold: #d97706;
+      --gold-light: #fef3c7;
+      --green: #059669;
+      --green-light: #d1fae5;
+      --blue: #2563eb;
+      --blue-light: #dbeafe;
+      --purple: #7c3aed;
+      --purple-light: #ede9fe;
+      --red: #dc2626;
+    }
+
+    body {
+      font-family: var(--hub-font, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif);
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      font-size: var(--hub-font-size, 15px);
+      line-height: 1.5;
+    }
+
+    .app { max-width: 600px; margin: 0 auto; padding: 16px; }
+
+    /* ── Header ─────────────────────────────────────────── */
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+    .header h1 { font-size: 1.25rem; font-weight: 700; }
+
+    /* ── Buttons ────────────────────────────────────────── */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: opacity .15s, background .15s;
+      text-decoration: none;
+    }
+    .btn:disabled { opacity: .45; cursor: default; }
+    .btn-primary { background: var(--accent); color: var(--hub-primary-fg, #ffffff); }
+    .btn-primary:hover:not(:disabled) { background: var(--accent-hover); }
+    .btn-ghost { background: transparent; color: var(--muted); border: 1.5px solid var(--border-mid); }
+    .btn-ghost:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+    .btn-danger { background: var(--red); color: white; }
+    .btn-danger:hover:not(:disabled) { opacity: .88; }
+    .btn-sm { padding: 5px 12px; font-size: 0.8rem; }
+    .btn-icon {
+      padding: 6px 8px;
+      border-radius: 6px;
+      font-size: 0.875rem;
+      cursor: pointer;
+      background: transparent;
+      border: none;
+      color: var(--muted);
+      line-height: 1;
+    }
+    .btn-icon:hover { color: var(--red); background: #fee2e2; }
+
+    /* ── Empty state ────────────────────────────────────── */
+    .empty {
+      text-align: center;
+      padding: 60px 16px;
+      color: var(--muted);
+    }
+    .empty .trophy { font-size: 3rem; margin-bottom: 12px; }
+    .empty p { font-size: 0.95rem; }
+
+    /* ── Win card ───────────────────────────────────────── */
+    .win-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      margin-bottom: 14px;
+      overflow: hidden;
+    }
+
+    .win-card-body { padding: 14px 16px; }
+
+    .win-meta {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .avatar {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: white;
+      flex-shrink: 0;
+    }
+
+    .win-author { font-weight: 600; font-size: 0.9rem; }
+    .win-time   { font-size: 0.78rem; color: var(--muted); }
+
+    .win-delete-btn {
+      margin-left: auto;
+      padding: 4px 6px;
+      border-radius: 6px;
+      font-size: 0.875rem;
+      cursor: pointer;
+      background: transparent;
+      border: none;
+      color: var(--muted);
+      opacity: 0;
+      transition: opacity .15s;
+    }
+    .win-card:hover .win-delete-btn { opacity: 1; }
+    .win-delete-btn:hover { color: var(--red); background: #fee2e2; }
+
+    .category-badge {
+      display: inline-block;
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 999px;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      margin-bottom: 6px;
+    }
+    .cat-grade     { background: var(--blue-light);   color: var(--blue); }
+    .cat-goal      { background: var(--green-light);  color: var(--green); }
+    .cat-milestone { background: var(--purple-light); color: var(--purple); }
+    .cat-other     { background: var(--gold-light);   color: var(--gold); }
+
+    .win-title {
+      font-size: 1rem;
+      font-weight: 700;
+      line-height: 1.35;
+      margin-bottom: 4px;
+    }
+    .win-body {
+      font-size: 0.875rem;
+      color: var(--muted);
+      white-space: pre-wrap;
+    }
+
+    /* ── Reactions ──────────────────────────────────────── */
+    .reactions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      padding: 10px 16px 0;
+    }
+
+    .reaction-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 0.825rem;
+      cursor: pointer;
+      border: 1.5px solid var(--border);
+      background: var(--bg);
+      color: var(--text);
+      transition: border-color .12s, background .12s;
+      user-select: none;
+    }
+    .reaction-btn:hover { border-color: var(--accent); }
+    .reaction-btn.reacted {
+      background: var(--gold-light);
+      border-color: var(--gold);
+      color: var(--gold);
+    }
+    .reaction-count { font-weight: 600; font-size: 0.78rem; }
+
+    /* ── Comments ───────────────────────────────────────── */
+    .comments-section { padding: 0 16px 14px; }
+
+    .comments-toggle {
+      display: inline-block;
+      margin-top: 10px;
+      font-size: 0.8rem;
+      color: var(--muted);
+      cursor: pointer;
+      user-select: none;
+    }
+    .comments-toggle:hover { color: var(--accent); }
+
+    .comments-list { margin-top: 10px; }
+
+    .comment {
+      display: flex;
+      gap: 8px;
+      padding: 6px 0;
+      border-top: 1px solid var(--border);
+    }
+    .comment:first-child { border-top: none; }
+
+    .comment-avatar {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: white;
+      flex-shrink: 0;
+    }
+
+    .comment-content { flex: 1; min-width: 0; }
+    .comment-header  { display: flex; align-items: baseline; gap: 6px; margin-bottom: 1px; }
+    .comment-author  { font-weight: 600; font-size: 0.8rem; }
+    .comment-time    { font-size: 0.72rem; color: var(--muted); }
+    .comment-delete  {
+      margin-left: auto;
+      font-size: 0.72rem;
+      color: var(--muted);
+      cursor: pointer;
+      background: none;
+      border: none;
+      padding: 0 2px;
+      opacity: 0;
+      transition: opacity .12s;
+    }
+    .comment:hover .comment-delete { opacity: 1; }
+    .comment-delete:hover { color: var(--red); }
+    .comment-body { font-size: 0.825rem; word-break: break-word; }
+
+    .comment-form {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px;
+      border-top: 1px solid var(--border);
+      padding-top: 10px;
+    }
+    .comment-input {
+      flex: 1;
+      padding: 6px 10px;
+      border-radius: 8px;
+      border: 1.5px solid var(--border-mid);
+      font-size: 0.825rem;
+      font-family: inherit;
+      background: var(--bg);
+      color: var(--text);
+    }
+    .comment-input:focus { outline: none; border-color: var(--accent); }
+    .comment-submit {
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 0.825rem;
+      font-weight: 600;
+      cursor: pointer;
+      background: var(--accent);
+      color: var(--hub-primary-fg, #ffffff);
+      border: none;
+    }
+    .comment-submit:disabled { opacity: .45; cursor: default; }
+
+    /* ── Modal ──────────────────────────────────────────── */
+    .modal-backdrop {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,.45);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      padding: 16px;
+    }
+    .modal {
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-md);
+      width: 100%;
+      max-width: 440px;
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 24px;
+    }
+    .modal h2 { font-size: 1.1rem; font-weight: 700; margin-bottom: 18px; }
+
+    .form-field { margin-bottom: 14px; }
+    .form-label {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      margin-bottom: 5px;
+    }
+    .form-input, .form-textarea {
+      width: 100%;
+      padding: 8px 12px;
+      border-radius: 8px;
+      border: 1.5px solid var(--border-mid);
+      font-size: 0.9rem;
+      font-family: inherit;
+      background: var(--bg);
+      color: var(--text);
+    }
+    .form-input:focus, .form-textarea:focus { outline: none; border-color: var(--accent); }
+    .form-textarea { resize: vertical; min-height: 80px; }
+    .char-count { font-size: 0.75rem; color: var(--muted); text-align: right; margin-top: 3px; }
+    .char-count.warn { color: var(--red); }
+
+    .category-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .cat-pill {
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 0.825rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1.5px solid var(--border-mid);
+      background: var(--bg);
+      color: var(--muted);
+      transition: all .12s;
+    }
+    .cat-pill.selected { border-color: var(--accent); background: var(--accent); color: var(--hub-primary-fg, #fff); }
+
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+<div class="app" id="app">
+  <div class="header">
+    <h1>🏆 Wins &amp; Celebrations</h1>
+    <button class="btn btn-primary btn-sm" onclick="openPostModal()">+ Post a Win</button>
+  </div>
+  <div id="feed"></div>
+</div>
+
+<script type="module">
+import { memberColor, initial, esc, isAdult, formatRelativeDate, hubConfirm } from "/hub-sdk.js";
+import {
+  VALID_EMOJIS, CATEGORIES, categoryLabel,
+  sortWinsByDate, reactionSummary, memberReacted,
+  commentsForWin, canDeleteWin, canDeleteComment,
+} from "./logic.js";
+
+const CONTEXT    = window.__CONTEXT_URL    ?? "";
+const DB         = window.__DB_URL         ?? "";
+const APP_ID     = window.__APP_ID         ?? "wins-celebrations";
+let   ME         = window.__CURRENT_MEMBER ?? null;
+const EVENTS_URL = window.__EVENTS_URL     ?? "/api/events";
+
+let members   = [];
+let wins      = [];
+let reactions = [];
+let comments  = [];
+let openCommentWinIds = new Set();
+let modalEl   = null;
+
+// ── DB helper ────────────────────────────────────────────────────────────────
+async function db(sql, params = []) {
+  if (!DB) return { rows: [] };
+  const res = await fetch(DB, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ sql, params }),
+  });
+  return res.json();
+}
+
+// ── Data loading ─────────────────────────────────────────────────────────────
+async function loadMembers() {
+  if (!CONTEXT) {
+    members = [
+      { id: "m1", name: "Alex", role: "adult" },
+      { id: "m2", name: "Jordan", role: "adult" },
+      { id: "m3", name: "Sam", role: "child" },
+      { id: "m4", name: "Riley", role: "child" },
+    ];
+    return;
+  }
+  try {
+    const res = await fetch(`${CONTEXT}?keys=family.members`);
+    members = ((await res.json())["family.members"]) ?? [];
+  } catch { members = []; }
+}
+
+async function loadWins() {
+  if (!DB) {
+    wins = [
+      { id: "w1", author_id: "m3", title: "Got an A on my math test!", body: "Finally nailed long division.", category: "grade", created_at: new Date(Date.now() - 3600000 * 2).toISOString() },
+      { id: "w2", author_id: "m1", title: "Finished the 5K run", body: "First race ever. So proud!", category: "goal", created_at: new Date(Date.now() - 86400000).toISOString() },
+      { id: "w3", author_id: "m4", title: "Learned to ride my bike without training wheels", body: "", category: "milestone", created_at: new Date(Date.now() - 86400000 * 2).toISOString() },
+    ];
+    reactions = [
+      { id: "r1", win_id: "w1", member_id: "m1", emoji: "🎉" },
+      { id: "r2", win_id: "w1", member_id: "m2", emoji: "🎉" },
+      { id: "r3", win_id: "w1", member_id: "m2", emoji: "👏" },
+      { id: "r4", win_id: "w2", member_id: "m3", emoji: "🔥" },
+    ];
+    comments = [
+      { id: "c1", win_id: "w1", author_id: "m1", body: "So proud of you!", created_at: new Date(Date.now() - 3600000).toISOString() },
+    ];
+    return;
+  }
+  const [wRes, rRes, cRes] = await Promise.all([
+    db(`SELECT * FROM wins ORDER BY created_at DESC LIMIT 100`),
+    db(`SELECT * FROM win_reactions`),
+    db(`SELECT * FROM win_comments ORDER BY created_at ASC`),
+  ]);
+  wins      = wRes.rows ?? [];
+  reactions = rRes.rows ?? [];
+  comments  = cRes.rows ?? [];
+}
+
+// ── Notifications & activity ──────────────────────────────────────────────────
+async function notify(title, body) {
+  await fetch("/api/notifications/send", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ title, body, url: `/run/${APP_ID}` }),
+  }).catch(() => {});
+}
+
+async function logActivity(winId, description) {
+  await fetch("/api/activity", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      type: "win.posted",
+      description,
+      metadata: { deepLink: { appId: APP_ID, params: { winId } } },
+    }),
+  }).catch(() => {});
+}
+
+// ── Member helpers ───────────────────────────────────────────────────────────
+function memberById(id) {
+  return members.find(m => m.id === id) ?? { id, name: "Unknown", role: "child" };
+}
+
+function avatarHtml(memberId, size = 34) {
+  const m = memberById(memberId);
+  const color = memberColor(memberId, members);
+  return `<div class="avatar" style="width:${size}px;height:${size}px;background:${color}">${esc(initial(m.name))}</div>`;
+}
+
+// ── Rendering ────────────────────────────────────────────────────────────────
+function render() {
+  const feed = document.getElementById("feed");
+  const sorted = sortWinsByDate(wins);
+
+  if (sorted.length === 0) {
+    feed.innerHTML = `
+      <div class="empty">
+        <div class="trophy">🏆</div>
+        <p>No wins yet — be the first to share something worth celebrating!</p>
+      </div>`;
+    return;
+  }
+
+  feed.innerHTML = sorted.map(win => renderWin(win)).join("");
+}
+
+function renderWin(win) {
+  const author    = memberById(win.author_id);
+  const summary   = reactionSummary(reactions, win.id);
+  const winComments = commentsForWin(comments, win.id);
+  const catClass  = `cat-${win.category}`;
+  const canDelete = canDeleteWin(win, ME);
+  const commentsOpen = openCommentWinIds.has(win.id);
+
+  const reactionHtml = VALID_EMOJIS.map(emoji => {
+    const count   = summary[emoji] ?? 0;
+    const reacted  = ME ? memberReacted(reactions, win.id, ME.id, emoji) : false;
+    const isOwnWin = ME?.id === win.author_id;
+    return `<button class="reaction-btn ${reacted ? "reacted" : ""}"
+      onclick="toggleReaction('${esc(win.id)}','${emoji}')"
+      ${!ME || isOwnWin ? "disabled" : ""}
+    >${emoji}${count > 0 ? ` <span class="reaction-count">${count}</span>` : ""}</button>`;
+  }).join("");
+
+  const commentCountLabel = winComments.length === 0
+    ? "Leave a note"
+    : `${winComments.length} note${winComments.length !== 1 ? "s" : ""}`;
+
+  const commentsHtml = commentsOpen ? `
+    <div class="comments-list">
+      ${winComments.map(c => renderComment(c)).join("")}
+    </div>
+    ${ME ? `
+      <div class="comment-form">
+        <input class="comment-input" id="comment-input-${esc(win.id)}"
+          placeholder="Say congrats…" maxlength="300"
+          onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();submitComment('${esc(win.id)}')}"
+        />
+        <button class="comment-submit" onclick="submitComment('${esc(win.id)}')">Send</button>
+      </div>` : ""}
+  ` : "";
+
+  return `
+    <div class="win-card" id="win-${esc(win.id)}">
+      <div class="win-card-body">
+        <div class="win-meta">
+          ${avatarHtml(win.author_id)}
+          <div>
+            <div class="win-author">${esc(author.name)}</div>
+            <div class="win-time">${esc(formatRelativeDate(win.created_at))}</div>
+          </div>
+          ${canDelete ? `<button class="win-delete-btn" onclick="deleteWin('${esc(win.id)}')" title="Delete">✕</button>` : ""}
+        </div>
+        <div class="category-badge ${catClass}">${esc(categoryLabel(win.category))}</div>
+        <div class="win-title">${esc(win.title)}</div>
+        ${win.body ? `<div class="win-body">${esc(win.body)}</div>` : ""}
+      </div>
+      <div class="reactions">${reactionHtml}</div>
+      <div class="comments-section">
+        <span class="comments-toggle" onclick="toggleComments('${esc(win.id)}')">${commentsOpen ? "▴" : "▾"} ${commentCountLabel}</span>
+        ${commentsHtml}
+      </div>
+    </div>`;
+}
+
+function renderComment(c) {
+  const author   = memberById(c.author_id);
+  const canDel   = canDeleteComment(c, ME);
+  return `
+    <div class="comment" id="comment-${esc(c.id)}">
+      <div class="comment-avatar" style="background:${memberColor(c.author_id, members)}">${esc(initial(author.name))}</div>
+      <div class="comment-content">
+        <div class="comment-header">
+          <span class="comment-author">${esc(author.name)}</span>
+          <span class="comment-time">${esc(formatRelativeDate(c.created_at))}</span>
+          ${canDel ? `<button class="comment-delete" onclick="deleteComment('${esc(c.id)}','${esc(c.win_id)}')" title="Delete">✕</button>` : ""}
+        </div>
+        <div class="comment-body">${esc(c.body)}</div>
+      </div>
+    </div>`;
+}
+
+// ── Interactions ─────────────────────────────────────────────────────────────
+window.toggleComments = function(winId) {
+  if (openCommentWinIds.has(winId)) {
+    openCommentWinIds.delete(winId);
+  } else {
+    openCommentWinIds.add(winId);
+  }
+  render();
+  if (openCommentWinIds.has(winId)) {
+    const input = document.getElementById(`comment-input-${winId}`);
+    if (input) input.focus();
+  }
+};
+
+window.toggleReaction = async function(winId, emoji) {
+  if (!ME) return;
+  const win = wins.find(w => w.id === winId);
+  if (win?.author_id === ME.id) return;
+  const already = memberReacted(reactions, winId, ME.id, emoji);
+  if (!DB) {
+    if (already) {
+      reactions = reactions.filter(r => !(r.win_id === winId && r.member_id === ME.id && r.emoji === emoji));
+    } else {
+      reactions.push({ id: crypto.randomUUID(), win_id: winId, member_id: ME.id, emoji, created_at: new Date().toISOString() });
+    }
+  } else {
+    if (already) {
+      await db(
+        `DELETE FROM win_reactions WHERE win_id = ? AND member_id = ? AND emoji = ?`,
+        [winId, ME.id, emoji]
+      );
+    } else {
+      const id = crypto.randomUUID();
+      await db(
+        `INSERT INTO win_reactions (id, win_id, member_id, emoji, created_at) VALUES (?, ?, ?, ?, ?)`,
+        [id, winId, ME.id, emoji, new Date().toISOString()]
+      );
+    }
+    const rRes = await db(`SELECT * FROM win_reactions`);
+    reactions  = rRes.rows ?? [];
+  }
+  render();
+};
+
+window.submitComment = async function(winId) {
+  const input = document.getElementById(`comment-input-${winId}`);
+  if (!input || !ME) return;
+  const body = input.value.trim();
+  if (!body) { input.focus(); return; }
+  const btn = input.nextElementSibling;
+  if (btn) { btn.disabled = true; btn.textContent = "…"; }
+  try {
+    const id  = crypto.randomUUID();
+    const now = new Date().toISOString();
+    if (!DB) {
+      comments.push({ id, win_id: winId, author_id: ME.id, body, created_at: now });
+    } else {
+      await db(
+        `INSERT INTO win_comments (id, win_id, author_id, body, created_at) VALUES (?, ?, ?, ?, ?)`,
+        [id, winId, ME.id, body, now]
+      );
+      const cRes = await db(`SELECT * FROM win_comments ORDER BY created_at ASC`);
+      comments = cRes.rows ?? [];
+    }
+    input.value = "";
+    render();
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = "Send"; }
+  }
+};
+
+window.deleteWin = async function(winId) {
+  const confirmed = await hubConfirm({
+    message: "Delete this win?",
+    description: "This will remove the win and all its reactions and notes.",
+    confirmLabel: "Delete",
+    destructive: true,
+  });
+  if (!confirmed) return;
+  if (!DB) {
+    wins      = wins.filter(w => w.id !== winId);
+    reactions = reactions.filter(r => r.win_id !== winId);
+    comments  = comments.filter(c => c.win_id !== winId);
+  } else {
+    await db(`DELETE FROM wins WHERE id = ?`, [winId]);
+    await loadWins();
+  }
+  openCommentWinIds.delete(winId);
+  render();
+};
+
+window.deleteComment = async function(commentId, winId) {
+  const confirmed = await hubConfirm({
+    message: "Delete this note?",
+    confirmLabel: "Delete",
+    destructive: true,
+  });
+  if (!confirmed) return;
+  if (!DB) {
+    comments = comments.filter(c => c.id !== commentId);
+  } else {
+    await db(`DELETE FROM win_comments WHERE id = ?`, [commentId]);
+    const cRes = await db(`SELECT * FROM win_comments ORDER BY created_at ASC`);
+    comments = cRes.rows ?? [];
+  }
+  render();
+};
+
+// ── Post Win modal ────────────────────────────────────────────────────────────
+function openModal(html) {
+  closeModal();
+  modalEl = document.createElement("div");
+  modalEl.className = "modal-backdrop";
+  modalEl.innerHTML = `<div class="modal">${html}</div>`;
+  modalEl.addEventListener("click", e => { if (e.target === modalEl) closeModal(); });
+  document.body.appendChild(modalEl);
+}
+function closeModal() { modalEl?.remove(); modalEl = null; }
+
+window.openPostModal = function() {
+  openModal(`
+    <h2>🏆 Post a Win</h2>
+
+    <div class="form-field">
+      <label class="form-label" for="f-title">What's the win? *</label>
+      <input class="form-input" id="f-title" maxlength="200" placeholder="e.g. Got an A on my history test" />
+      <div class="char-count" id="title-count">0 / 200</div>
+    </div>
+
+    <div class="form-field">
+      <label class="form-label" for="f-body">More details <span style="font-weight:400;text-transform:none">(optional)</span></label>
+      <textarea class="form-textarea" id="f-body" maxlength="1000" placeholder="Add some context…"></textarea>
+      <div class="char-count" id="body-count">0 / 1000</div>
+    </div>
+
+    <div class="form-field">
+      <label class="form-label">Category</label>
+      <div class="category-pills" id="cat-pills">
+        <button class="cat-pill selected" data-cat="grade"     onclick="selectCat(this)">Grade</button>
+        <button class="cat-pill"          data-cat="goal"      onclick="selectCat(this)">Goal</button>
+        <button class="cat-pill"          data-cat="milestone" onclick="selectCat(this)">Milestone</button>
+        <button class="cat-pill"          data-cat="other"     onclick="selectCat(this)">Other</button>
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="submitWin()">Post Win</button>
+    </div>
+  `);
+
+  const titleInput = document.getElementById("f-title");
+  const bodyInput  = document.getElementById("f-body");
+  titleInput.addEventListener("input", () => {
+    const n = titleInput.value.length;
+    const el = document.getElementById("title-count");
+    el.textContent = `${n} / 200`;
+    el.className = "char-count" + (n > 180 ? " warn" : "");
+  });
+  bodyInput.addEventListener("input", () => {
+    const n = bodyInput.value.length;
+    const el = document.getElementById("body-count");
+    el.textContent = `${n} / 1000`;
+    el.className = "char-count" + (n > 900 ? " warn" : "");
+  });
+  titleInput.focus();
+};
+
+window.selectCat = function(btn) {
+  document.querySelectorAll(".cat-pill").forEach(p => p.classList.remove("selected"));
+  btn.classList.add("selected");
+};
+
+window.submitWin = async function() {
+  const title    = document.getElementById("f-title").value.trim();
+  const body     = document.getElementById("f-body").value.trim();
+  const catEl    = document.querySelector(".cat-pill.selected");
+  const category = catEl?.dataset.cat ?? "other";
+
+  if (!title) { document.getElementById("f-title").focus(); return; }
+  if (!ME)    { closeModal(); return; }
+
+  const btn = modalEl?.querySelector(".modal-actions .btn-primary");
+  if (btn) { btn.disabled = true; btn.textContent = "Posting…"; }
+
+  try {
+    const id  = crypto.randomUUID();
+    const now = new Date().toISOString();
+    const authorName = members.find(m => m.id === ME.id)?.name ?? "Someone";
+    if (!DB) {
+      wins.unshift({ id, author_id: ME.id, title, body, category, created_at: now });
+    } else {
+      await db(
+        `INSERT INTO wins (id, author_id, title, body, category, created_at) VALUES (?, ?, ?, ?, ?, ?)`,
+        [id, ME.id, title, body, category, now]
+      );
+      await Promise.all([
+        loadWins(),
+        logActivity(id, `${authorName} posted a win: "${title}"`),
+        notify("New Win 🏆", `${authorName}: ${title}`),
+      ]);
+    }
+    closeModal();
+    render();
+    document.getElementById(`win-${id}`)?.scrollIntoView({ behavior: "smooth", block: "start" });
+  } catch (e) {
+    if (btn) { btn.disabled = false; btn.textContent = "Post Win"; }
+    throw e;
+  }
+};
+
+// ── Deep link ────────────────────────────────────────────────────────────────
+function handleDeepLink() {
+  const params = new URLSearchParams(window.location.search);
+  const winId  = params.get("winId");
+  if (!winId) return;
+  openCommentWinIds.add(winId);
+  render();
+  setTimeout(() => {
+    document.getElementById(`win-${winId}`)?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, 100);
+}
+
+// ── Init ─────────────────────────────────────────────────────────────────────
+(async () => {
+  await loadMembers();
+  if (!ME && !DB) ME = members[0] ?? null;
+  await loadWins();
+  handleDeepLink();
+  render();
+})();
+</script>
+</body>
+</html>

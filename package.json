@@ -1,0 +1,16 @@
+{
+  "name": "chickadee-wins-celebrations",
+  "version": "1.0.0",
+  "description": "Wins & Celebrations app for the Chickadee Bandit marketplace",
+  "type": "module",
+  "scripts": {
+    "build": "node build.mjs",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "dev": "node dev.mjs"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "vitest": "^3.2.4"
+  }
+}

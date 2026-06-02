@@ -1,0 +1,44 @@
+{
+  "id": "wins-celebrations",
+  "name": "Wins & Celebrations",
+  "version": "1.0.0",
+  "description": "Post a win — a grade, goal, or milestone — and let the whole family cheer you on.",
+  "entrypoint": "index.html",
+  "runtime": "static",
+  "category": "kids",
+  "tags": [
+    "wins",
+    "celebrations",
+    "family",
+    "everyone",
+    "kids"
+  ],
+  "data_access": {
+    "reads": [
+      "family.members"
+    ],
+    "writes": []
+  },
+  "permissions": {
+    "default_audience": "everyone",
+    "requires_approval": false
+  },
+  "storage": "db",
+  "publishes": [
+    "win.posted"
+  ],
+  "alert_on": [
+    "win.posted"
+  ],
+  "nav": { "label": "Wins" },
+  "widget": {
+    "label": "Wins",
+    "size": "small"
+  },
+  "ai_access": {
+    "allowed": true,
+    "mode": "read",
+    "db_exports": ["recent_wins"]
+  },
+  "icon": "🏆"
+}
