@@ -584,61 +584,34 @@ window.toggleComments = function(winId) {
   }
 };
 
-window.toggleReaction = async function(winId, emoji) {
+window.toggleReaction = function(winId, emoji) {
   if (!ME) return;
   const win = wins.find(w => w.id === winId);
   if (win?.author_id === ME.id) return;
   const already = memberReacted(reactions, winId, ME.id, emoji);
-  if (!DB) {
-    if (already) {
-      reactions = reactions.filter(r => !(r.win_id === winId && r.member_id === ME.id && r.emoji === emoji));
-    } else {
-      reactions.push({ id: crypto.randomUUID(), win_id: winId, member_id: ME.id, emoji, created_at: new Date().toISOString() });
-    }
+  if (already) {
+    reactions = reactions.filter(r => !(r.win_id === winId && r.member_id === ME.id && r.emoji === emoji));
+    if (DB) db(`DELETE FROM win_reactions WHERE win_id = ? AND member_id = ? AND emoji = ?`, [winId, ME.id, emoji]);
   } else {
-    if (already) {
-      await db(
-        `DELETE FROM win_reactions WHERE win_id = ? AND member_id = ? AND emoji = ?`,
-        [winId, ME.id, emoji]
-      );
-    } else {
-      const id = crypto.randomUUID();
-      await db(
-        `INSERT INTO win_reactions (id, win_id, member_id, emoji, created_at) VALUES (?, ?, ?, ?, ?)`,
-        [id, winId, ME.id, emoji, new Date().toISOString()]
-      );
-    }
-    const rRes = await db(`SELECT * FROM win_reactions`);
-    reactions  = rRes.rows ?? [];
+    const id = crypto.randomUUID();
+    reactions.push({ id, win_id: winId, member_id: ME.id, emoji, created_at: new Date().toISOString() });
+    if (DB) db(`INSERT INTO win_reactions (id, win_id, member_id, emoji, created_at) VALUES (?, ?, ?, ?, ?)`, [id, winId, ME.id, emoji, new Date().toISOString()]);
   }
   render();
 };
 
-window.submitComment = async function(winId) {
+window.submitComment = function(winId) {
   const input = document.getElementById(`comment-input-${winId}`);
   if (!input || !ME) return;
   const body = input.value.trim();
   if (!body) { input.focus(); return; }
-  const btn = input.nextElementSibling;
-  if (btn) { btn.disabled = true; btn.textContent = "…"; }
-  try {
-    const id  = crypto.randomUUID();
-    const now = new Date().toISOString();
-    if (!DB) {
-      comments.push({ id, win_id: winId, author_id: ME.id, body, created_at: now });
-    } else {
-      await db(
-        `INSERT INTO win_comments (id, win_id, author_id, body, created_at) VALUES (?, ?, ?, ?, ?)`,
-        [id, winId, ME.id, body, now]
-      );
-      const cRes = await db(`SELECT * FROM win_comments ORDER BY created_at ASC`);
-      comments = cRes.rows ?? [];
-    }
-    input.value = "";
-    render();
-  } finally {
-    if (btn) { btn.disabled = false; btn.textContent = "Send"; }
-  }
+  const id  = crypto.randomUUID();
+  const now = new Date().toISOString();
+  comments.push({ id, win_id: winId, author_id: ME.id, body, created_at: now });
+  input.value = "";
+  render();
+  if (DB) db(`INSERT INTO win_comments (id, win_id, author_id, body, created_at) VALUES (?, ?, ?, ?, ?)`,
+    [id, winId, ME.id, body, now]);
 };
 
 window.deleteWin = async function(winId) {
@@ -649,16 +622,15 @@ window.deleteWin = async function(winId) {
     destructive: true,
   });
   if (!confirmed) return;
-  if (!DB) {
-    wins      = wins.filter(w => w.id !== winId);
-    reactions = reactions.filter(r => r.win_id !== winId);
-    comments  = comments.filter(c => c.win_id !== winId);
-  } else {
-    await db(`DELETE FROM wins WHERE id = ?`, [winId]);
-    await loadWins();
-  }
+  wins      = wins.filter(w => w.id !== winId);
+  reactions = reactions.filter(r => r.win_id !== winId);
+  comments  = comments.filter(c => c.win_id !== winId);
   openCommentWinIds.delete(winId);
   render();
+  if (DB) Promise.all([
+    db(`DELETE FROM win_reactions WHERE win_id = ?`, [winId]),
+    db(`DELETE FROM win_comments WHERE win_id = ?`, [winId]),
+  ]).then(() => db(`DELETE FROM wins WHERE id = ?`, [winId]));
 };
 
 window.deleteComment = async function(commentId, winId) {
@@ -668,14 +640,9 @@ window.deleteComment = async function(commentId, winId) {
     destructive: true,
   });
   if (!confirmed) return;
-  if (!DB) {
-    comments = comments.filter(c => c.id !== commentId);
-  } else {
-    await db(`DELETE FROM win_comments WHERE id = ?`, [commentId]);
-    const cRes = await db(`SELECT * FROM win_comments ORDER BY created_at ASC`);
-    comments = cRes.rows ?? [];
-  }
+  comments = comments.filter(c => c.id !== commentId);
   render();
+  if (DB) db(`DELETE FROM win_comments WHERE id = ?`, [commentId]);
 };
 
 // ── Post Win modal ────────────────────────────────────────────────────────────
@@ -743,7 +710,7 @@ window.selectCat = function(btn) {
   btn.classList.add("selected");
 };
 
-window.submitWin = async function() {
+window.submitWin = function() {
   const title    = document.getElementById("f-title").value.trim();
   const body     = document.getElementById("f-body").value.trim();
   const catEl    = document.querySelector(".cat-pill.selected");
@@ -752,32 +719,19 @@ window.submitWin = async function() {
   if (!title) { document.getElementById("f-title").focus(); return; }
   if (!ME)    { closeModal(); return; }
 
-  const btn = modalEl?.querySelector(".modal-actions .btn-primary");
-  if (btn) { btn.disabled = true; btn.textContent = "Posting…"; }
+  const id  = crypto.randomUUID();
+  const now = new Date().toISOString();
+  const authorName = members.find(m => m.id === ME.id)?.name ?? "Someone";
+  wins.unshift({ id, author_id: ME.id, title, body, category, created_at: now });
+  closeModal();
+  render();
+  document.getElementById(`win-${id}`)?.scrollIntoView({ behavior: "smooth", block: "start" });
 
-  try {
-    const id  = crypto.randomUUID();
-    const now = new Date().toISOString();
-    const authorName = members.find(m => m.id === ME.id)?.name ?? "Someone";
-    if (!DB) {
-      wins.unshift({ id, author_id: ME.id, title, body, category, created_at: now });
-    } else {
-      await db(
-        `INSERT INTO wins (id, author_id, title, body, category, created_at) VALUES (?, ?, ?, ?, ?, ?)`,
-        [id, ME.id, title, body, category, now]
-      );
-      await Promise.all([
-        loadWins(),
-        logActivity(id, `${authorName} posted a win: "${title}"`),
-        notify("New Win 🏆", `${authorName}: ${title}`),
-      ]);
-    }
-    closeModal();
-    render();
-    document.getElementById(`win-${id}`)?.scrollIntoView({ behavior: "smooth", block: "start" });
-  } catch (e) {
-    if (btn) { btn.disabled = false; btn.textContent = "Post Win"; }
-    throw e;
+  if (DB) {
+    db(`INSERT INTO wins (id, author_id, title, body, category, created_at) VALUES (?, ?, ?, ?, ?, ?)`,
+      [id, ME.id, title, body, category, now]);
+    logActivity(id, `${authorName} posted a win: "${title}"`);
+    notify("New Win 🏆", `${authorName}: ${title}`);
   }
 };
 
@@ -795,9 +749,8 @@ function handleDeepLink() {
 
 // ── Init ─────────────────────────────────────────────────────────────────────
 (async () => {
-  await loadMembers();
+  await Promise.all([loadMembers(), loadWins()]);
   if (!ME && !DB) ME = members[0] ?? null;
-  await loadWins();
   handleDeepLink();
   render();
 })();
