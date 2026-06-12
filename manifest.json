@@ -5,7 +5,7 @@
   "description": "Post a win — a grade, goal, or milestone — and let the whole family cheer you on.",
   "entrypoint": "index.html",
   "runtime": "static",
-  "category": "kids",
+  "category": "general",
   "tags": [
     "wins",
     "celebrations",
