@@ -106,8 +106,7 @@ async function init() {
 
   const { rows: wins } = await db(`
     SELECT id, author_id, title, category, created_at
-    FROM wins
-    WHERE household_id = current_setting('app.household_id', true)::uuid
+    FROM app_wins_celebrations__wins
     ORDER BY created_at DESC
     LIMIT 4
   `);

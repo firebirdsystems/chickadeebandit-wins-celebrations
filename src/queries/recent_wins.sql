@@ -5,7 +5,6 @@ SELECT
   w.body,
   w.category,
   w.created_at
-FROM wins w
-WHERE w.household_id = current_setting('app.household_id', true)::uuid
+FROM app_wins_celebrations__wins w
 ORDER BY w.created_at DESC
 LIMIT 50

@@ -436,9 +436,9 @@ async function loadWins() {
     return;
   }
   const [wRes, rRes, cRes] = await Promise.all([
-    db(`SELECT * FROM wins ORDER BY created_at DESC LIMIT 100`),
-    db(`SELECT * FROM win_reactions`),
-    db(`SELECT * FROM win_comments ORDER BY created_at ASC`),
+    db(`SELECT * FROM app_wins_celebrations__wins ORDER BY created_at DESC LIMIT 100`),
+    db(`SELECT * FROM app_wins_celebrations__win_reactions`),
+    db(`SELECT * FROM app_wins_celebrations__win_comments ORDER BY created_at ASC`),
   ]);
   wins      = wRes.rows ?? [];
   reactions = rRes.rows ?? [];
@@ -591,11 +591,11 @@ window.toggleReaction = function(winId, emoji) {
   const already = memberReacted(reactions, winId, ME.id, emoji);
   if (already) {
     reactions = reactions.filter(r => !(r.win_id === winId && r.member_id === ME.id && r.emoji === emoji));
-    if (DB) db(`DELETE FROM win_reactions WHERE win_id = ? AND member_id = ? AND emoji = ?`, [winId, ME.id, emoji]);
+    if (DB) db(`DELETE FROM app_wins_celebrations__win_reactions WHERE win_id = ? AND member_id = ? AND emoji = ?`, [winId, ME.id, emoji]);
   } else {
     const id = crypto.randomUUID();
     reactions.push({ id, win_id: winId, member_id: ME.id, emoji, created_at: new Date().toISOString() });
-    if (DB) db(`INSERT INTO win_reactions (id, win_id, member_id, emoji, created_at) VALUES (?, ?, ?, ?, ?)`, [id, winId, ME.id, emoji, new Date().toISOString()]);
+    if (DB) db(`INSERT INTO app_wins_celebrations__win_reactions (id, win_id, member_id, emoji, created_at) VALUES (?, ?, ?, ?, ?)`, [id, winId, ME.id, emoji, new Date().toISOString()]);
   }
   render();
 };
@@ -610,7 +610,7 @@ window.submitComment = function(winId) {
   comments.push({ id, win_id: winId, author_id: ME.id, body, created_at: now });
   input.value = "";
   render();
-  if (DB) db(`INSERT INTO win_comments (id, win_id, author_id, body, created_at) VALUES (?, ?, ?, ?, ?)`,
+  if (DB) db(`INSERT INTO app_wins_celebrations__win_comments (id, win_id, author_id, body, created_at) VALUES (?, ?, ?, ?, ?)`,
     [id, winId, ME.id, body, now]);
 };
 
@@ -628,9 +628,9 @@ window.deleteWin = async function(winId) {
   openCommentWinIds.delete(winId);
   render();
   if (DB) Promise.all([
-    db(`DELETE FROM win_reactions WHERE win_id = ?`, [winId]),
-    db(`DELETE FROM win_comments WHERE win_id = ?`, [winId]),
-  ]).then(() => db(`DELETE FROM wins WHERE id = ?`, [winId]));
+    db(`DELETE FROM app_wins_celebrations__win_reactions WHERE win_id = ?`, [winId]),
+    db(`DELETE FROM app_wins_celebrations__win_comments WHERE win_id = ?`, [winId]),
+  ]).then(() => db(`DELETE FROM app_wins_celebrations__wins WHERE id = ?`, [winId]));
 };
 
 window.deleteComment = async function(commentId, winId) {
@@ -642,7 +642,7 @@ window.deleteComment = async function(commentId, winId) {
   if (!confirmed) return;
   comments = comments.filter(c => c.id !== commentId);
   render();
-  if (DB) db(`DELETE FROM win_comments WHERE id = ?`, [commentId]);
+  if (DB) db(`DELETE FROM app_wins_celebrations__win_comments WHERE id = ?`, [commentId]);
 };
 
 // ── Post Win modal ────────────────────────────────────────────────────────────
