@@ -24,6 +24,24 @@
     "requires_approval": false
   },
   "storage": "db",
+  "row_policies": {
+    "wins": {
+      "kind": "owner_only",
+      "member_column": "author_id"
+    },
+    "win_reactions": {
+      "kind": "owner_only",
+      "member_column": "member_id",
+      "adults_bypass": false
+    },
+    "win_comments": {
+      "kind": "owner_only",
+      "member_column": "author_id"
+    }
+  },
+  "publish_acls": {
+    "win.posted": { "require_role": "member" }
+  },
   "publishes": [
     "win.posted"
   ],

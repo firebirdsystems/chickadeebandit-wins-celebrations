@@ -437,8 +437,8 @@ async function loadWins() {
   }
   const [wRes, rRes, cRes] = await Promise.all([
     db(`SELECT * FROM app_wins_celebrations__wins ORDER BY created_at DESC LIMIT 100`),
-    db(`SELECT * FROM app_wins_celebrations__win_reactions`),
-    db(`SELECT * FROM app_wins_celebrations__win_comments ORDER BY created_at ASC`),
+    db(`SELECT * FROM app_wins_celebrations__win_reactions WHERE win_id IN (SELECT id FROM app_wins_celebrations__wins ORDER BY created_at DESC LIMIT 100)`),
+    db(`SELECT * FROM app_wins_celebrations__win_comments WHERE win_id IN (SELECT id FROM app_wins_celebrations__wins ORDER BY created_at DESC LIMIT 100) ORDER BY created_at ASC`),
   ]);
   wins      = wRes.rows ?? [];
   reactions = rRes.rows ?? [];
@@ -728,7 +728,7 @@ window.submitWin = function() {
   document.getElementById(`win-${id}`)?.scrollIntoView({ behavior: "smooth", block: "start" });
 
   if (DB) {
-    db(`INSERT INTO wins (id, author_id, title, body, category, created_at) VALUES (?, ?, ?, ?, ?, ?)`,
+    db(`INSERT INTO app_wins_celebrations__wins (id, author_id, title, body, category, created_at) VALUES (?, ?, ?, ?, ?, ?)`,
       [id, ME.id, title, body, category, now]);
     logActivity(id, `${authorName} posted a win: "${title}"`);
     notify("New Win 🏆", `${authorName}: ${title}`);
