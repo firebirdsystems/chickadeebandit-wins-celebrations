@@ -1,5 +1,4 @@
 export { AVATAR_COLORS, memberColor, initial, esc, isAdult, formatRelativeDate } from "./shared.js";
-import { isAdult } from "./shared.js";
 
 export const VALID_EMOJIS = ["🎉", "🔥", "❤️", "👏", "⭐"];
 export const CATEGORIES = ["grade", "goal", "milestone", "other"];
@@ -33,12 +32,15 @@ export function commentsForWin(comments, winId) {
   return comments.filter(c => c.win_id === winId);
 }
 
+// Writes are owner-only server-side (wins/win_comments policies have no privileged
+// group), so only the author may delete. Keep these gates in sync with the policy —
+// granting adults a delete button they'd get a silent 403 on is misleading UX.
 export function canDeleteWin(win, me) {
   if (!me) return false;
-  return me.id === win.author_id || isAdult(me);
+  return me.id === win.author_id;
 }
 
 export function canDeleteComment(comment, me) {
   if (!me) return false;
-  return me.id === comment.author_id || isAdult(me);
+  return me.id === comment.author_id;
 }
