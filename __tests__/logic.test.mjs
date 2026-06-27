@@ -169,8 +169,10 @@ describe("canDeleteWin", () => {
     expect(canDeleteWin(makeWin({ author_id: "m2" }), CHILD)).toBe(true);
   });
 
-  it("returns true for an adult who is not the author", () => {
-    expect(canDeleteWin(makeWin({ author_id: "m2" }), ADULT)).toBe(true);
+  it("returns false for an adult who is not the author", () => {
+    // Writes are owner-only server-side (no privileged group), so adults cannot
+    // delete another member's win — the gate must mirror that.
+    expect(canDeleteWin(makeWin({ author_id: "m2" }), ADULT)).toBe(false);
   });
 
   it("returns false for a non-author child", () => {
@@ -188,8 +190,9 @@ describe("canDeleteComment", () => {
     expect(canDeleteComment(makeComment({ author_id: "m2" }), CHILD)).toBe(true);
   });
 
-  it("returns true for an adult who is not the author", () => {
-    expect(canDeleteComment(makeComment({ author_id: "m2" }), ADULT)).toBe(true);
+  it("returns false for an adult who is not the author", () => {
+    // Owner-only writes: adults cannot delete another member's comment.
+    expect(canDeleteComment(makeComment({ author_id: "m2" }), ADULT)).toBe(false);
   });
 
   it("returns false for a non-author child", () => {
