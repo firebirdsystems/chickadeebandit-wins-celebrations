@@ -36,7 +36,11 @@
       "kind": "inherit_visibility",
       "parent_table": "wins",
       "fk_column": "win_id",
-      "writer_column": "member_id"
+      "writer_column": "member_id",
+      "unique_per_member": {
+        "member_column": "member_id",
+        "scope_columns": ["win_id", "emoji"]
+      }
     },
     "win_comments": {
       "kind": "inherit_visibility",
