@@ -507,7 +507,7 @@ function renderWin(win) {
     const reacted  = ME ? memberReacted(reactions, win.id, ME.id, emoji) : false;
     const isOwnWin = ME?.id === win.author_id;
     return `<button class="reaction-btn ${reacted ? "reacted" : ""}"
-      onclick="toggleReaction('${esc(win.id)}','${emoji}')"
+      data-action="react" data-win-id="${esc(win.id)}" data-emoji="${esc(emoji)}"
       ${!ME || isOwnWin ? "disabled" : ""}
     >${emoji}${count > 0 ? ` <span class="reaction-count">${count}</span>` : ""}</button>`;
   }).join("");
@@ -524,9 +524,9 @@ function renderWin(win) {
       <div class="comment-form">
         <input class="comment-input" id="comment-input-${esc(win.id)}"
           placeholder="Say congrats…" maxlength="300"
-          onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();submitComment('${esc(win.id)}')}"
+          data-action-key="send-comment" data-win-id="${esc(win.id)}"
         />
-        <button class="comment-submit" onclick="submitComment('${esc(win.id)}')">Send</button>
+        <button class="comment-submit" data-action="send-comment" data-win-id="${esc(win.id)}">Send</button>
       </div>` : ""}
   ` : "";
 
@@ -539,7 +539,7 @@ function renderWin(win) {
             <div class="win-author">${esc(author.name)}</div>
             <div class="win-time">${esc(formatRelativeDate(win.created_at))}</div>
           </div>
-          ${canDelete ? `<button class="win-delete-btn" onclick="deleteWin('${esc(win.id)}')" title="Delete">✕</button>` : ""}
+          ${canDelete ? `<button class="win-delete-btn" data-action="delete-win" data-win-id="${esc(win.id)}" title="Delete">✕</button>` : ""}
         </div>
         <div class="category-badge ${catClass}">${esc(categoryLabel(win.category))}</div>
         <div class="win-title">${esc(win.title)}</div>
@@ -547,7 +547,7 @@ function renderWin(win) {
       </div>
       <div class="reactions">${reactionHtml}</div>
       <div class="comments-section">
-        <span class="comments-toggle" onclick="toggleComments('${esc(win.id)}')">${commentsOpen ? "▴" : "▾"} ${commentCountLabel}</span>
+        <span class="comments-toggle" data-action="toggle-comments" data-win-id="${esc(win.id)}">${commentsOpen ? "▴" : "▾"} ${commentCountLabel}</span>
         ${commentsHtml}
       </div>
     </div>`;
@@ -563,11 +563,42 @@ function renderComment(c) {
         <div class="comment-header">
           <span class="comment-author">${esc(author.name)}</span>
           <span class="comment-time">${esc(formatRelativeDate(c.created_at))}</span>
-          ${canDel ? `<button class="comment-delete" onclick="deleteComment('${esc(c.id)}','${esc(c.win_id)}')" title="Delete">✕</button>` : ""}
+          ${canDel ? `<button class="comment-delete" data-action="delete-comment" data-comment-id="${esc(c.id)}" data-win-id="${esc(c.win_id)}" title="Delete">✕</button>` : ""}
         </div>
         <div class="comment-body">${esc(c.body)}</div>
       </div>
     </div>`;
+}
+
+// ── Event delegation ─────────────────────────────────────────────────────────
+// Handlers are bound via data-* attributes rather than inline onclick strings:
+// win/comment ids are attacker-controllable DB values (any member can INSERT a
+// row with a crafted id via raw /api/db), and HTML-escaping is NOT sufficient
+// inside an inline handler's JS-string context — the browser decodes the entity
+// back before the JS parser runs, allowing a stored-XSS breakout. Delegation
+// keeps ids purely as data, never as code.
+function setupFeedDelegation() {
+  const feedEl = document.getElementById("feed");
+  feedEl.addEventListener("click", (e) => {
+    const el = e.target.closest("[data-action]");
+    if (!el) return;
+    const { action, winId, emoji, commentId } = el.dataset;
+    switch (action) {
+      case "react":           window.toggleReaction(winId, emoji); break;
+      case "toggle-comments": window.toggleComments(winId); break;
+      case "send-comment":    window.submitComment(winId); break;
+      case "delete-win":      window.deleteWin(winId); break;
+      case "delete-comment":  window.deleteComment(commentId, winId); break;
+    }
+  });
+  feedEl.addEventListener("keydown", (e) => {
+    const el = e.target.closest("[data-action-key='send-comment']");
+    if (!el) return;
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      window.submitComment(el.dataset.winId);
+    }
+  });
 }
 
 // ── Interactions ─────────────────────────────────────────────────────────────
@@ -749,6 +780,7 @@ function handleDeepLink() {
 
 // ── Init ─────────────────────────────────────────────────────────────────────
 (async () => {
+  setupFeedDelegation();
   await Promise.all([loadMembers(), loadWins()]);
   if (!ME && !DB) ME = members[0] ?? null;
   handleDeepLink();
