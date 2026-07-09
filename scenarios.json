@@ -1,0 +1,70 @@
+{
+  "scenarios": [
+    {
+      "name": "one reaction per member per emoji per win; different emoji still allowed",
+      "members": { "author": "adult", "reactor": "adult" },
+      "steps": [
+        {
+          "action": "seedRaw",
+          "sql": "INSERT INTO app_wins_celebrations__wins (id, author_id, title, visibility, created_at) VALUES (?, ?, ?, 'everyone', ?)",
+          "params": ["w1", "{{author}}", "Got the job!", "2026-01-01T00:00:00Z"]
+        },
+        {
+          "action": "db",
+          "as": "reactor",
+          "sql": "INSERT INTO app_wins_celebrations__win_reactions (id, win_id, member_id, emoji, created_at) VALUES (?, ?, ?, ?, ?)",
+          "params": ["r1", "w1", "{{reactor}}", "🎉", "2026-01-02T00:00:00Z"],
+          "expect": { "status": 200 }
+        },
+        {
+          "action": "db",
+          "as": "reactor",
+          "sql": "INSERT INTO app_wins_celebrations__win_reactions (id, win_id, member_id, emoji, created_at) VALUES (?, ?, ?, ?, ?)",
+          "params": ["r2", "w1", "{{reactor}}", "🎉", "2026-01-02T00:01:00Z"],
+          "expect": { "status": 403 }
+        },
+        {
+          "action": "db",
+          "as": "reactor",
+          "sql": "INSERT INTO app_wins_celebrations__win_reactions (id, win_id, member_id, emoji, created_at) VALUES (?, ?, ?, ?, ?)",
+          "params": ["r3", "w1", "{{reactor}}", "👏", "2026-01-02T00:02:00Z"],
+          "expect": { "status": 200 }
+        }
+      ]
+    },
+    {
+      "name": "private wins and their reactions are hidden from other members",
+      "members": { "author": "adult", "other": "adult" },
+      "steps": [
+        {
+          "action": "seedRaw",
+          "sql": "INSERT INTO app_wins_celebrations__wins (id, author_id, title, visibility, created_at) VALUES (?, ?, ?, 'private', ?)",
+          "params": ["w1", "{{author}}", "Secret milestone", "2026-01-01T00:00:00Z"]
+        },
+        {
+          "action": "seedRaw",
+          "sql": "INSERT INTO app_wins_celebrations__win_reactions (id, win_id, member_id, emoji, created_at) VALUES (?, ?, ?, ?, ?)",
+          "params": ["r1", "w1", "{{author}}", "🎉", "2026-01-01T00:00:00Z"]
+        },
+        {
+          "action": "db",
+          "as": "other",
+          "sql": "SELECT id FROM app_wins_celebrations__wins",
+          "expect": { "status": 200, "rowCount": 0 }
+        },
+        {
+          "action": "db",
+          "as": "other",
+          "sql": "SELECT id FROM app_wins_celebrations__win_reactions",
+          "expect": { "status": 200, "rowCount": 0 }
+        },
+        {
+          "action": "db",
+          "as": "author",
+          "sql": "SELECT id FROM app_wins_celebrations__wins",
+          "expect": { "status": 200, "rowCount": 1 }
+        }
+      ]
+    }
+  ]
+}

@@ -435,12 +435,17 @@ async function loadWins() {
     ];
     return;
   }
-  const [wRes, rRes, cRes] = await Promise.all([
-    db(`SELECT * FROM app_wins_celebrations__wins ORDER BY created_at DESC LIMIT 100`),
-    db(`SELECT * FROM app_wins_celebrations__win_reactions WHERE win_id IN (SELECT id FROM app_wins_celebrations__wins ORDER BY created_at DESC LIMIT 100)`),
-    db(`SELECT * FROM app_wins_celebrations__win_comments WHERE win_id IN (SELECT id FROM app_wins_celebrations__wins ORDER BY created_at DESC LIMIT 100) ORDER BY created_at ASC`),
+  // Row policies can't rewrite subqueries on governed tables — load the wins
+  // first, then fetch reactions/comments by explicit id list.
+  const wRes = await db(`SELECT * FROM app_wins_celebrations__wins ORDER BY created_at DESC LIMIT 100`);
+  wins = wRes.rows ?? [];
+  if (wins.length === 0) { reactions = []; comments = []; return; }
+  const ids = wins.map(w => w.id);
+  const ph = ids.map(() => "?").join(",");
+  const [rRes, cRes] = await Promise.all([
+    db(`SELECT * FROM app_wins_celebrations__win_reactions WHERE win_id IN (${ph})`, ids),
+    db(`SELECT * FROM app_wins_celebrations__win_comments WHERE win_id IN (${ph}) ORDER BY created_at ASC`, ids),
   ]);
-  wins      = wRes.rows ?? [];
   reactions = rRes.rows ?? [];
   comments  = cRes.rows ?? [];
 }
