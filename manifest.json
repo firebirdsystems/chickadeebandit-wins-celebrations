@@ -37,9 +37,10 @@
       "parent_table": "wins",
       "fk_column": "win_id",
       "writer_column": "member_id",
-      "unique_per_member": {
+      "max_per_member": {
         "member_column": "member_id",
-        "scope_columns": ["win_id", "emoji"]
+        "scope_columns": ["win_id", "emoji"],
+        "limit": 1
       }
     },
     "win_comments": {
