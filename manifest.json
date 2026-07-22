@@ -1,5 +1,6 @@
 {
   "id": "wins-celebrations",
+  "contexts": ["household", "shared_space"],
   "name": "Wins & Celebrations",
   "version": "1.0.1",
   "description": "Post a win — a grade, goal, or milestone — and let the whole family cheer you on.",
