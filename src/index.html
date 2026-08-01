@@ -357,6 +357,13 @@
       gap: 10px;
       margin-top: 20px;
     }
+    .search-row { margin-bottom: 12px; }
+    .search-input {
+      width: 100%; border: 1.5px solid var(--border-mid, var(--border, #d1d5db));
+      border-radius: 8px; padding: 9px 11px; font: inherit;
+      background: var(--surface, var(--card, #fff)); color: var(--text, inherit);
+    }
+    .search-input:focus { outline: none; border-color: var(--accent, #6366f1); }
   </style>
 </head>
 <body>
@@ -365,15 +372,18 @@
     <h1>🏆 Wins &amp; Celebrations</h1>
     <button class="btn btn-primary btn-sm" onclick="openPostModal()">+ Post a Win</button>
   </div>
+  <div class="search-row" id="search-row" style="display:none">
+    <input id="search" class="search-input" type="search" placeholder="Search wins…" aria-label="Search wins" />
+  </div>
   <div id="feed"></div>
 </div>
 
 <script type="module">
-import { memberColor, initial, esc, isAdult, formatRelativeDate, hubConfirm } from "/hub-sdk.js";
+import { memberColor, initial, esc, isAdult, formatRelativeDate, hubConfirm, searchMatch } from "/hub-sdk.js";
 import {
   VALID_EMOJIS, CATEGORIES, categoryLabel,
   sortWinsByDate, reactionSummary, memberReacted,
-  commentsForWin, canDeleteWin, canDeleteComment,
+  commentsForWin, canDeleteWin, canDeleteComment, searchableFields,
 } from "./logic.js";
 
 const CONTEXT    = window.__CONTEXT_URL    ?? "";
@@ -384,6 +394,7 @@ const EVENTS_URL = window.__EVENTS_URL     ?? "/api/events";
 
 let members   = [];
 let wins      = [];
+let searchQ = "";       // in-app search (see logic.js searchableFields)
 let reactions = [];
 let comments  = [];
 let openCommentWinIds = new Set();
@@ -489,9 +500,26 @@ function avatarHtml(memberId, size = 34) {
 }
 
 // ── Rendering ────────────────────────────────────────────────────────────────
+// Only the feed is redrawn, so the search box keeps focus.
+document.addEventListener("input", (e) => {
+  if (e.target.id !== "search") return;
+  searchQ = e.target.value;
+  render();
+});
+
 function render() {
   const feed = document.getElementById("feed");
-  const sorted = sortWinsByDate(wins);
+  // Only worth offering the box once there is a feed to search.
+  const searchRow = document.getElementById("search-row");
+  if (searchRow) searchRow.style.display = wins.length ? "" : "none";
+
+  const all = sortWinsByDate(wins);
+  const sorted = searchQ ? all.filter(w => searchMatch(searchQ, searchableFields(w))) : all;
+
+  if (wins.length && sorted.length === 0) {
+    feed.innerHTML = `<div class="empty"><div class="trophy">🔍</div><p>No wins match "${esc(searchQ)}".</p></div>`;
+    return;
+  }
 
   if (sorted.length === 0) {
     feed.innerHTML = `

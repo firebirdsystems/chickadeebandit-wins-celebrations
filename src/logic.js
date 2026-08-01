@@ -56,3 +56,12 @@ export function canDeleteComment(comment, me) {
   if (!me) return false;
   return me.id === comment.author_id || isAdult(me);
 }
+
+/**
+ * Fields the in-app search matches against (see hub-sdk `searchMatch`).
+ * The body is the win — the title is often just "Passed!" and the
+ * story is underneath it.
+ */
+export function searchableFields(item) {
+  return [item.title, item.body, item.category];
+}

@@ -3,7 +3,7 @@ import {
   VALID_EMOJIS, CATEGORIES, categoryLabel,
   sortWinsByDate, reactionSummary, memberReacted,
   commentsForWin, canDeleteWin, canDeleteComment,
-  esc, memberColor, initial, AVATAR_COLORS, isAdult,
+  esc, memberColor, initial, AVATAR_COLORS, isAdult, searchableFields,
 } from "../src/logic.js";
 
 // ── Fixtures ──────────────────────────────────────────────────────────────────
@@ -248,4 +248,11 @@ describe("isAdult", () => {
   it("returns true for adult role", () => expect(isAdult(ADULT)).toBe(true));
   it("returns false for child role", () => expect(isAdult(CHILD)).toBe(false));
   it("returns false for null", () => expect(isAdult(null)).toBe(false));
+});
+
+describe("searchableFields", () => {
+  it("matches on the body, where the story of a win actually lives", () => {
+    const fields = searchableFields({ title: "Passed!", body: "grade 5 clarinet, first try", category: "school" });
+    expect(fields).toContain("grade 5 clarinet, first try");
+  });
 });
