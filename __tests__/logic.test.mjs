@@ -169,10 +169,11 @@ describe("canDeleteWin", () => {
     expect(canDeleteWin(makeWin({ author_id: "m2" }), CHILD)).toBe(true);
   });
 
-  it("returns false for an adult who is not the author", () => {
-    // Writes are owner-only server-side (no privileged group), so adults cannot
-    // delete another member's win — the gate must mirror that.
-    expect(canDeleteWin(makeWin({ author_id: "m2" }), ADULT)).toBe(false);
+  it("returns true for an adult moderating another member's win", () => {
+    // `write_owner_only` used to suppress the adult bypass, so a parent could
+    // not remove anything from a board their children post to — and a departed
+    // member's win was undeletable by anyone. The gate mirrors the policy.
+    expect(canDeleteWin(makeWin({ author_id: "m2" }), ADULT)).toBe(true);
   });
 
   it("returns false for a non-author child", () => {
@@ -190,9 +191,10 @@ describe("canDeleteComment", () => {
     expect(canDeleteComment(makeComment({ author_id: "m2" }), CHILD)).toBe(true);
   });
 
-  it("returns false for an adult who is not the author", () => {
-    // Owner-only writes: adults cannot delete another member's comment.
-    expect(canDeleteComment(makeComment({ author_id: "m2" }), ADULT)).toBe(false);
+  it("returns true for an adult moderating another member's comment", () => {
+    // win_comments inherits the parent win's rules, so the adult bypass came
+    // back here with it.
+    expect(canDeleteComment(makeComment({ author_id: "m2" }), ADULT)).toBe(true);
   });
 
   it("returns false for a non-author child", () => {

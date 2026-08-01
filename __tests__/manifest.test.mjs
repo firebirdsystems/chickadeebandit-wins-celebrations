@@ -38,6 +38,23 @@ describe("manifest.json", () => {
     expect(Array.isArray(manifest.data_access.reads)).toBe(true);
     expect(Array.isArray(manifest.data_access.writes)).toBe(true);
   });
+
+  // An append-only household feed with no cap: every win keeps its reactions
+  // and comments forever, and nothing in the app ever deletes one. Two years
+  // matches what a celebration feed is actually read for, and the override key
+  // lets an admin lengthen or shorten it from the hub's retention controls.
+  // The cascade is required, not decorative — reactions and comments hang off
+  // win_id, so pruning a win without them orphans both tables permanently.
+  it("expires wins after two years, taking their reactions and comments with them", () => {
+    const retain = manifest.row_policies?.wins?.retain_days;
+    expect(retain?.default).toBe(730);
+    expect(retain?.timestamp_column).toBe("created_at");
+    expect(retain?.override_key).toBe("win_history");
+    expect(retain?.dependent_tables).toEqual([
+      { table: "win_reactions", foreign_key: "win_id" },
+      { table: "win_comments", foreign_key: "win_id" },
+    ]);
+  });
 });
 
 // ── ai_access SQL file validation ─────────────────────────────────────────────

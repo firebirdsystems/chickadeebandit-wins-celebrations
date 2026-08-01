@@ -1,3 +1,7 @@
+// Imported as well as re-exported: `export … from` re-publishes the binding
+// without introducing it into this module's scope, and canDeleteWin below needs
+// to call isAdult.
+import { isAdult } from "./shared.js";
 export { AVATAR_COLORS, memberColor, initial, esc, isAdult, formatRelativeDate } from "./shared.js";
 
 export const VALID_EMOJIS = ["🎉", "🔥", "❤️", "👏", "⭐"];
@@ -32,15 +36,23 @@ export function commentsForWin(comments, winId) {
   return comments.filter(c => c.win_id === winId);
 }
 
-// Writes are owner-only server-side (wins/win_comments policies have no privileged
-// group), so only the author may delete. Keep these gates in sync with the policy —
-// granting adults a delete button they'd get a silent 403 on is misleading UX.
+// Authors may always delete their own; adults may also moderate anyone's.
+//
+// `wins` previously carried `write_owner_only: true`, which removed the adult
+// bypass entirely — so in a board children post to, a parent could not take
+// anything down, and content from a member who had since left the household
+// could never be deleted by anyone at all. Dropping the flag restores the
+// platform default (adults supervise; in a shared space, the steward does),
+// and `win_comments` inherits its parent's rules.
+//
+// Keep these gates in sync with the policy — a delete button that earns a
+// silent 403 is worse than no button.
 export function canDeleteWin(win, me) {
   if (!me) return false;
-  return me.id === win.author_id;
+  return me.id === win.author_id || isAdult(me);
 }
 
 export function canDeleteComment(comment, me) {
   if (!me) return false;
-  return me.id === comment.author_id;
+  return me.id === comment.author_id || isAdult(me);
 }

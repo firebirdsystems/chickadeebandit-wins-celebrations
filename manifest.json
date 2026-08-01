@@ -31,7 +31,15 @@
       "member_column": "author_id",
       "visibility_column": "visibility",
       "everyone_values": ["everyone"],
-      "write_owner_only": true
+      "retain_days": {
+        "default": 730,
+        "timestamp_column": "created_at",
+        "override_key": "win_history",
+        "dependent_tables": [
+          { "table": "win_reactions", "foreign_key": "win_id" },
+          { "table": "win_comments", "foreign_key": "win_id" }
+        ]
+      }
     },
     "win_reactions": {
       "kind": "inherit_visibility",
@@ -50,6 +58,11 @@
       "fk_column": "win_id",
       "writer_column": "author_id"
     }
+  },
+  "member_references": {
+    "wins": { "column": "author_id", "on_removed": "keep" },
+    "win_reactions": { "column": "member_id", "on_removed": "delete" },
+    "win_comments": { "column": "author_id", "on_removed": "keep" }
   },
   "db_plaintext_columns": ["visibility"],
   "publish_acls": {
