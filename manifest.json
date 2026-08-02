@@ -74,6 +74,8 @@
   "alert_on": [
     "win.posted"
   ],
+  "glance": {"source": {"kind": "sql", "query": "SELECT title AS title, author_id AS member_id, created_at AS at FROM app_wins_celebrations__wins ORDER BY created_at DESC LIMIT 3"}, "display": {"template": "list", "title": "title", "when": "at", "owner": "member_id"}},
+  "automation_actions": {"post_win": {"title": "Post a win", "description": "Celebrate on the wall when another app's event fires - a streak milestone, a goal reached, a chore streak kept.", "params": {"author_id": {"type": "member", "label": "Who it belongs to", "required": true}, "title": {"type": "text", "label": "The win", "required": true}, "body": {"type": "text", "label": "Details", "default": ""}, "category": {"type": "text", "label": "Category", "default": "other"}}, "dedupe": {"table": "wins", "column": "source_event_id"}, "steps": [{"op": "insert", "table": "wins", "values": {"id": "$uuid", "author_id": ":author_id", "title": ":title", "body": ":body", "category": ":category", "created_at": "$now", "source_event_id": "$event_id"}}]}},
   "nav": { "label": "Wins" },
   "widget": {
     "label": "Wins",

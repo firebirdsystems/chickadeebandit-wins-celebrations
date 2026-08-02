@@ -476,6 +476,19 @@ async function notify(title, body) {
   }).catch(() => {});
 }
 
+// The typed event bus, a different sink from the activity feed below: activity
+// is the household's human-readable log, while an event is what drives manifest
+// `alert_on` inbox notifications and cross-app automation triggers. Both are
+// wanted — posting only activity is what left `alert_on: ["win.posted"]`
+// silently dead.
+async function publishEvent(type, subjectId, payload = {}) {
+  await fetch(EVENTS_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ type, subject_id: subjectId, payload }),
+  }).catch(() => {});
+}
+
 async function logActivity(winId, description) {
   await fetch(window.__ACTIVITY_URL ?? "/api/activity", {
     method: "POST",
@@ -801,6 +814,7 @@ window.submitWin = function() {
     db(`INSERT INTO app_wins_celebrations__wins (id, author_id, title, body, category, created_at) VALUES (?, ?, ?, ?, ?, ?)`,
       [id, ME.id, title, body, category, now]);
     logActivity(id, `${authorName} posted a win: "${title}"`);
+    publishEvent("win.posted", id, { win_id: id, title, category });
     notify("New Win 🏆", `${authorName}: ${title}`);
   }
 };
