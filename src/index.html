@@ -370,12 +370,12 @@
 <div class="app" id="app">
   <div class="header">
     <h1>🏆 Wins &amp; Celebrations</h1>
-    <button class="btn btn-primary btn-sm" onclick="openPostModal()">+ Post a Win</button>
+    <button class="btn btn-primary btn-sm" data-testid="post-win" onclick="openPostModal()">+ Post a Win</button>
   </div>
   <div class="search-row" id="search-row" style="display:none">
-    <input id="search" class="search-input" type="search" placeholder="Search wins…" aria-label="Search wins" />
+    <input id="search" data-testid="search-input" class="search-input" type="search" placeholder="Search wins…" aria-label="Search wins" />
   </div>
-  <div id="feed"></div>
+  <div id="feed" data-testid="feed"></div>
 </div>
 
 <script type="module">
@@ -583,7 +583,7 @@ function renderWin(win) {
   ` : "";
 
   return `
-    <div class="win-card" id="win-${esc(win.id)}">
+    <div class="win-card" data-testid="win-card" data-win-id="${esc(win.id)}" id="win-${esc(win.id)}">
       <div class="win-card-body">
         <div class="win-meta">
           ${avatarHtml(win.author_id)}
@@ -594,7 +594,7 @@ function renderWin(win) {
           ${canDelete ? `<button class="win-delete-btn" data-action="delete-win" data-win-id="${esc(win.id)}" title="Delete">✕</button>` : ""}
         </div>
         <div class="category-badge ${catClass}">${esc(categoryLabel(win.category))}</div>
-        <div class="win-title">${esc(win.title)}</div>
+        <div class="win-title" data-testid="win-title">${esc(win.title)}</div>
         ${win.body ? `<div class="win-body">${esc(win.body)}</div>` : ""}
       </div>
       <div class="reactions">${reactionHtml}</div>
@@ -729,15 +729,19 @@ window.deleteComment = async function(commentId, winId) {
 };
 
 // ── Post Win modal ────────────────────────────────────────────────────────────
-function openModal(html) {
+// `name` tags the dialog so a UI scenario can wait on the modal it opened
+// rather than on "any modal" — the calendar convention.
+function openModal(html, name) {
   closeModal();
   modalEl = document.createElement("div");
   modalEl.className = "modal-backdrop";
+  if (name) modalEl.dataset.testid = name;
   modalEl.innerHTML = `<div class="modal">${html}</div>`;
   modalEl.addEventListener("click", e => { if (e.target === modalEl) closeModal(); });
   document.body.appendChild(modalEl);
 }
 function closeModal() { modalEl?.remove(); modalEl = null; }
+window.closeModal = closeModal;
 
 window.openPostModal = function() {
   openModal(`
@@ -745,13 +749,13 @@ window.openPostModal = function() {
 
     <div class="form-field">
       <label class="form-label" for="f-title">What's the win? *</label>
-      <input class="form-input" id="f-title" maxlength="200" placeholder="e.g. Got an A on my history test" />
+      <input class="form-input" id="f-title" data-testid="field-title" maxlength="200" placeholder="e.g. Got an A on my history test" />
       <div class="char-count" id="title-count">0 / 200</div>
     </div>
 
     <div class="form-field">
       <label class="form-label" for="f-body">More details <span style="font-weight:400;text-transform:none">(optional)</span></label>
-      <textarea class="form-textarea" id="f-body" maxlength="1000" placeholder="Add some context…"></textarea>
+      <textarea class="form-textarea" id="f-body" data-testid="field-body" maxlength="1000" placeholder="Add some context…"></textarea>
       <div class="char-count" id="body-count">0 / 1000</div>
     </div>
 
@@ -766,10 +770,10 @@ window.openPostModal = function() {
     </div>
 
     <div class="modal-actions">
-      <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
-      <button class="btn btn-primary" onclick="submitWin()">Post Win</button>
+      <button class="btn btn-ghost" data-testid="win-cancel" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" data-testid="win-submit" onclick="submitWin()">Post Win</button>
     </div>
-  `);
+  `, "post-win-modal");
 
   const titleInput = document.getElementById("f-title");
   const bodyInput  = document.getElementById("f-body");

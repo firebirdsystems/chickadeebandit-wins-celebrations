@@ -1,0 +1,55 @@
+{
+  "scenarios": [
+    {
+      "name": "a win that is not visible to everyone is absent from another member's rendered feed",
+      "members": { "owner": "adult", "other": "adult" },
+      "steps": [
+        {
+          "action": "seedRaw",
+          "sql": "INSERT INTO app_wins_celebrations__wins (id, author_id, title, body, category, created_at, visibility) VALUES (?, ?, ?, '', 'goal', datetime('now'), 'everyone')",
+          "params": ["ui-shared-win", "{{owner}}", "Won the science fair"]
+        },
+        {
+          "action": "seedRaw",
+          "sql": "INSERT INTO app_wins_celebrations__wins (id, author_id, title, body, category, created_at, visibility) VALUES (?, ?, ?, '', 'milestone', datetime('now'), 'private')",
+          "params": ["ui-private-win", "{{owner}}", "Six months sober"]
+        },
+
+        { "action": "open", "as": "owner" },
+        { "action": "expectText", "as": "owner", "text": "Won the science fair", "selector": "[data-testid=\"feed\"]" },
+        { "action": "expectText", "as": "owner", "text": "Six months sober", "selector": "[data-testid=\"feed\"]" },
+
+        { "action": "open", "as": "other" },
+        { "action": "expectText", "as": "other", "text": "Won the science fair", "selector": "[data-testid=\"feed\"]" },
+        { "action": "expectNoText", "as": "other", "text": "Six months sober" }
+      ]
+    },
+    {
+      "name": "a win posted through the modal survives a reload, and Cancel discards instead of posting",
+      "members": { "member": "adult" },
+      "steps": [
+        { "action": "open" },
+
+        { "action": "click", "selector": "[data-testid=\"post-win\"]" },
+        { "action": "waitFor", "selector": "[data-testid=\"post-win-modal\"]" },
+        { "action": "fill", "selector": "[data-testid=\"field-title\"]", "value": "Ran a 5k" },
+        { "action": "fill", "selector": "[data-testid=\"field-body\"]", "value": "First race ever" },
+        { "action": "click", "selector": "[data-testid=\"win-submit\"]" },
+        { "action": "waitFor", "selector": "[data-testid=\"post-win-modal\"]", "state": "detached" },
+        { "action": "expectText", "text": "Ran a 5k", "selector": "[data-testid=\"feed\"]" },
+
+        { "action": "reload" },
+        { "action": "expectCount", "selector": "[data-testid=\"win-card\"]", "count": 1 },
+        { "action": "expectText", "text": "First race ever", "selector": "[data-testid=\"feed\"]" },
+
+        { "action": "click", "selector": "[data-testid=\"post-win\"]" },
+        { "action": "waitFor", "selector": "[data-testid=\"post-win-modal\"]" },
+        { "action": "fill", "selector": "[data-testid=\"field-title\"]", "value": "Discarded Draft" },
+        { "action": "click", "selector": "[data-testid=\"win-cancel\"]" },
+        { "action": "waitFor", "selector": "[data-testid=\"post-win-modal\"]", "state": "detached" },
+        { "action": "expectCount", "selector": "[data-testid=\"win-card\"]", "count": 1 },
+        { "action": "expectNoText", "text": "Discarded Draft" }
+      ]
+    }
+  ]
+}
