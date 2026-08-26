@@ -25,6 +25,9 @@
     "requires_approval": false
   },
   "storage": "db",
+  "preload": {
+    "wins": {"sql": "SELECT * FROM app_wins_celebrations__wins ORDER BY created_at DESC LIMIT 100"}
+  },
   "row_policies": {
     "wins": {
       "kind": "owner_or_visibility",
