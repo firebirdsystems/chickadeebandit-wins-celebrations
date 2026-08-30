@@ -379,7 +379,7 @@
 </div>
 
 <script type="module">
-import { memberColor, initial, esc, isAdult, formatRelativeDate, hubConfirm, searchMatch } from "/hub-sdk.js";
+import { memberColor, initial, esc, isAdult, formatRelativeDate, hubConfirm, searchMatch, logHubActivity } from "/hub-sdk.js";
 import {
   VALID_EMOJIS, CATEGORIES, categoryLabel,
   sortWinsByDate, reactionSummary, memberReacted,
@@ -476,21 +476,22 @@ async function notify(title, body) {
   }).catch(() => {});
 }
 
-// The typed event bus. This is the ONLY sink a win goes to.
+// The typed event bus — one of the two sinks a win goes to (see
+// logHubActivity at the post site for the other).
 //
-// There used to be a `logActivity()` beside this that POSTed
-// `type: "win.posted"` to /api/activity. That call never once succeeded: the
-// activity feed's types are a closed hub-owned union (`ActivityType` in
-// activity.ts) and only the subset in `CALLER_ALLOWED_ACTIVITY_TYPES` may be
-// written by a caller — everything else is hub-authored trust signalling that
-// an app must not be able to forge with its own description. `win.posted` is in
-// neither list, so the hub answered 403 on every win ever posted, and the
-// `.catch(() => {})` around a fetch that does not reject on 4xx swallowed it.
+// A `logActivity()` used to sit beside this and POST `type: "win.posted"` to
+// /api/activity. It never once succeeded: the feed's types are a closed
+// hub-owned union (`ActivityType`) and only the `CALLER_ALLOWED_ACTIVITY_TYPES`
+// subset may be written by a caller — the rest is hub-authored trust
+// signalling an app must not be able to forge with its own description.
+// `win.posted` is in neither list, so the hub answered 403 on every win ever
+// posted and the `.catch(() => {})` around a fetch that does not reject on 4xx
+// swallowed it in silence.
 //
-// Removing it costs nothing that worked: `alert_on: ["win.posted"]` is driven
-// by the event below, not by activity. Putting wins in the household's
-// human-readable feed needs a hub change (a new ActivityType plus an allowlist
-// entry), which is a decision about that security boundary, not an app fix.
+// The fix was never to re-point that call at a hub type: it was the hub change
+// this comment used to ask for, which now exists as the generic `app_activity`
+// type. The two sinks are not redundant — this event is machine-readable and
+// drives `alert_on: ["win.posted"]`; the feed line is what a person reads.
 async function publishEvent(type, subjectId, payload = {}) {
   await fetch(EVENTS_URL, {
     method: "POST",
@@ -816,6 +817,28 @@ window.submitWin = function() {
     db(`INSERT INTO app_wins_celebrations__wins (id, author_id, title, body, category, created_at) VALUES (?, ?, ?, ?, ?, ?)`,
       [id, ME.id, title, body, category, now]);
     publishEvent("win.posted", id, { win_id: id, title, category });
+    // A win belongs in the household's human-readable feed — that was the
+    // conclusion of the note that used to sit at the top of this section, which
+    // said doing it "needs a hub change (a new ActivityType plus an allowlist
+    // entry)". That change exists now: `app_activity` is the one generic type a
+    // caller may write, and it is deliberately kept out of ALERT_ACTIVITY_TYPES
+    // so this can never raise a bell notification. alert_on: ["win.posted"]
+    // still drives the alert, from the event above.
+    //
+    // Why this is safe HERE specifically, and would not be a few lines away:
+    // private wins are real — `visibility` is `TEXT NOT NULL DEFAULT 'everyone'`
+    // and a row set to 'private' renders only to its author (ui-scenarios seeds
+    // exactly that case, with "Six months sober" as the sample). Those rows
+    // arrive by other paths. This INSERT omits the column, so a win posted
+    // through this modal always takes the 'everyone' default and is already
+    // household-readable.
+    //
+    // So: if a visibility control is ever added to this modal, this call must
+    // move behind it. The activity feed is household-wide and honours no app
+    // row policy — it would publish the title verbatim to everyone.
+    logHubActivity(`${authorName} posted a win: ${title}`, {
+      deepLink: { appId: APP_ID, params: { win: id } },
+    });
     notify("New Win 🏆", `${authorName}: ${title}`);
   }
 };
