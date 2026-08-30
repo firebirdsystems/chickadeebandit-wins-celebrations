@@ -476,28 +476,26 @@ async function notify(title, body) {
   }).catch(() => {});
 }
 
-// The typed event bus, a different sink from the activity feed below: activity
-// is the household's human-readable log, while an event is what drives manifest
-// `alert_on` inbox notifications and cross-app automation triggers. Both are
-// wanted — posting only activity is what left `alert_on: ["win.posted"]`
-// silently dead.
+// The typed event bus. This is the ONLY sink a win goes to.
+//
+// There used to be a `logActivity()` beside this that POSTed
+// `type: "win.posted"` to /api/activity. That call never once succeeded: the
+// activity feed's types are a closed hub-owned union (`ActivityType` in
+// activity.ts) and only the subset in `CALLER_ALLOWED_ACTIVITY_TYPES` may be
+// written by a caller — everything else is hub-authored trust signalling that
+// an app must not be able to forge with its own description. `win.posted` is in
+// neither list, so the hub answered 403 on every win ever posted, and the
+// `.catch(() => {})` around a fetch that does not reject on 4xx swallowed it.
+//
+// Removing it costs nothing that worked: `alert_on: ["win.posted"]` is driven
+// by the event below, not by activity. Putting wins in the household's
+// human-readable feed needs a hub change (a new ActivityType plus an allowlist
+// entry), which is a decision about that security boundary, not an app fix.
 async function publishEvent(type, subjectId, payload = {}) {
   await fetch(EVENTS_URL, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ type, subject_id: subjectId, payload }),
-  }).catch(() => {});
-}
-
-async function logActivity(winId, description) {
-  await fetch(window.__ACTIVITY_URL ?? "/api/activity", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      type: "win.posted",
-      description,
-      metadata: { deepLink: { appId: APP_ID, params: { winId } } },
-    }),
   }).catch(() => {});
 }
 
@@ -817,7 +815,6 @@ window.submitWin = function() {
   if (DB) {
     db(`INSERT INTO app_wins_celebrations__wins (id, author_id, title, body, category, created_at) VALUES (?, ?, ?, ?, ?, ?)`,
       [id, ME.id, title, body, category, now]);
-    logActivity(id, `${authorName} posted a win: "${title}"`);
     publishEvent("win.posted", id, { win_id: id, title, category });
     notify("New Win 🏆", `${authorName}: ${title}`);
   }
