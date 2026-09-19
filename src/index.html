@@ -20,15 +20,15 @@
       --radius:       var(--hub-radius, 0.5rem);
       --shadow:       0 1px 3px rgba(0,0,0,.07);
       --shadow-md:    0 4px 12px rgba(0,0,0,.1);
-      --gold: #d97706;
-      --gold-light: #fef3c7;
-      --green: #059669;
-      --green-light: #d1fae5;
-      --blue: #2563eb;
-      --blue-light: #dbeafe;
-      --purple: #7c3aed;
-      --purple-light: #ede9fe;
-      --red: #dc2626;
+      --gold: var(--hub-tint-warning-fg, #d97706);
+      --gold-light: var(--hub-tint-warning, #fef3c7);
+      --green: var(--hub-tint-success-fg, #059669);
+      --green-light: var(--hub-tint-success, #d1fae5);
+      --blue: var(--hub-tint-info-fg, #2563eb);
+      --blue-light: var(--hub-tint-info, #dbeafe);
+      --purple: var(--hub-tint-accent-fg, #7c3aed);
+      --purple-light: var(--hub-tint-accent, #ede9fe);
+      --red: var(--hub-tint-danger-fg, #dc2626);
     }
 
     body {
@@ -83,7 +83,7 @@
       color: var(--muted);
       line-height: 1;
     }
-    .btn-icon:hover { color: var(--red); background: #fee2e2; }
+    .btn-icon:hover { color: var(--red); background: var(--hub-tint-danger, #fee2e2); }
 
     /* ── Empty state ────────────────────────────────────── */
     .empty {
@@ -142,7 +142,7 @@
       transition: opacity .15s;
     }
     .win-card:hover .win-delete-btn { opacity: 1; }
-    .win-delete-btn:hover { color: var(--red); background: #fee2e2; }
+    .win-delete-btn:hover { color: var(--red); background: var(--hub-tint-danger, #fee2e2); }
 
     .category-badge {
       display: inline-block;
