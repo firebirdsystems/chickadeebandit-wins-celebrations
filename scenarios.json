@@ -65,6 +65,185 @@
           "expect": { "status": 200, "rowCount": 1 }
         }
       ]
+    },
+    {
+      "name": "a child's win is stamped as themselves and a child cannot edit or delete another member's win, while an adult can edit the child's",
+      "members": { "kid": "child", "parent": "adult" },
+      "steps": [
+        {
+          "action": "seedRaw",
+          "sql": "INSERT INTO app_wins_celebrations__wins (id, author_id, title, visibility, created_at) VALUES (?, ?, ?, ?, ?)",
+          "params": ["w-parent", "{{parent}}", "Win w-parent", "everyone", "2026-01-01T00:00:00Z"]
+        },
+        {
+          "action": "db",
+          "as": "kid",
+          "sql": "INSERT INTO app_wins_celebrations__wins (id, author_id, title, visibility, created_at) VALUES (?, ?, ?, ?, ?)",
+          "params": ["w-kid", "{{parent}}", "Aced the test", "everyone", "2026-01-02T00:00:00Z"],
+          "expect": { "status": 200 }
+        },
+        {
+          "action": "db",
+          "as": "kid",
+          "sql": "UPDATE app_wins_celebrations__wins SET title = ? WHERE id = ?",
+          "params": ["hijacked", "w-parent"],
+          "expect": { "status": 200 }
+        },
+        {
+          "action": "db",
+          "as": "kid",
+          "sql": "DELETE FROM app_wins_celebrations__wins WHERE id = ?",
+          "params": ["w-parent"],
+          "expect": { "status": 200 }
+        },
+        {
+          "action": "db",
+          "as": "parent",
+          "sql": "UPDATE app_wins_celebrations__wins SET title = ? WHERE id = ?",
+          "params": ["Aced the math test", "w-kid"],
+          "expect": { "status": 200 }
+        },
+        {
+          "action": "db",
+          "as": "parent",
+          "sql": "SELECT id, author_id, title FROM app_wins_celebrations__wins ORDER BY id",
+          "expect": {
+            "status": 200,
+            "rowCount": 2,
+            "rowsContain": [
+              { "id": "w-kid", "author_id": "scn-kid", "title": "Aced the math test" },
+              { "id": "w-parent", "title": "Win w-parent" }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "a child cannot see or comment on another member's private win, and their comments are stamped as themselves",
+      "members": { "kid": "child", "parent": "adult" },
+      "steps": [
+        {
+          "action": "seedRaw",
+          "sql": "INSERT INTO app_wins_celebrations__wins (id, author_id, title, visibility, created_at) VALUES (?, ?, ?, ?, ?)",
+          "params": ["w-priv", "{{parent}}", "Win w-priv", "private", "2026-01-01T00:00:00Z"]
+        },
+        {
+          "action": "seedRaw",
+          "sql": "INSERT INTO app_wins_celebrations__wins (id, author_id, title, visibility, created_at) VALUES (?, ?, ?, ?, ?)",
+          "params": ["w-pub", "{{parent}}", "Win w-pub", "everyone", "2026-01-01T00:00:00Z"]
+        },
+        {
+          "action": "db",
+          "as": "kid",
+          "sql": "SELECT id FROM app_wins_celebrations__wins",
+          "expect": { "status": 200, "rowCount": 1, "rowsContain": [{ "id": "w-pub" }] }
+        },
+        {
+          "action": "db",
+          "as": "kid",
+          "sql": "INSERT INTO app_wins_celebrations__win_comments (id, win_id, author_id, body, created_at) VALUES (?, ?, ?, ?, ?)",
+          "params": ["c1", "w-priv", "{{kid}}", "Nice", "2026-01-02T00:00:00Z"],
+          "expect": { "status": 403 }
+        },
+        {
+          "action": "db",
+          "as": "kid",
+          "sql": "INSERT INTO app_wins_celebrations__win_comments (id, win_id, author_id, body, created_at) VALUES (?, ?, ?, ?, ?)",
+          "params": ["c2", "w-pub", "{{parent}}", "Congrats", "2026-01-02T00:00:00Z"],
+          "expect": { "status": 200 }
+        },
+        {
+          "action": "db",
+          "as": "parent",
+          "sql": "SELECT id, author_id FROM app_wins_celebrations__win_comments",
+          "expect": { "status": 200, "rowCount": 1, "rowsContain": [{ "id": "c2", "author_id": "scn-kid" }] }
+        }
+      ]
+    },
+    {
+      "name": "in a shared space only the steward edits or removes another member's win; a participant adult cannot",
+      "context": "shared_space",
+      "members": { "a": "adult", "b": "adult", "steward": "admin" },
+      "steps": [
+        {
+          "action": "seedRaw",
+          "sql": "INSERT INTO app_wins_celebrations__wins (id, author_id, title, visibility, created_at) VALUES (?, ?, ?, ?, ?)",
+          "params": ["w-b", "{{b}}", "Win w-b", "everyone", "2026-01-01T00:00:00Z"]
+        },
+        {
+          "action": "seedRaw",
+          "sql": "INSERT INTO app_wins_celebrations__wins (id, author_id, title, visibility, created_at) VALUES (?, ?, ?, ?, ?)",
+          "params": ["w-b2", "{{b}}", "Win w-b2", "everyone", "2026-01-01T00:00:00Z"]
+        },
+        {
+          "action": "db",
+          "as": "a",
+          "sql": "UPDATE app_wins_celebrations__wins SET title = ? WHERE id = ?",
+          "params": ["hijacked", "w-b"],
+          "expect": { "status": 200 }
+        },
+        {
+          "action": "db",
+          "as": "a",
+          "sql": "DELETE FROM app_wins_celebrations__wins WHERE id = ?",
+          "params": ["w-b2"],
+          "expect": { "status": 200 }
+        },
+        {
+          "action": "db",
+          "as": "b",
+          "sql": "SELECT id, title FROM app_wins_celebrations__wins ORDER BY id",
+          "expect": {
+            "status": 200,
+            "rowCount": 2,
+            "rowsContain": [{ "id": "w-b", "title": "Win w-b" }, { "id": "w-b2" }]
+          }
+        },
+        {
+          "action": "db",
+          "as": "steward",
+          "sql": "UPDATE app_wins_celebrations__wins SET title = ? WHERE id = ?",
+          "params": ["moderated", "w-b"],
+          "expect": { "status": 200 }
+        },
+        {
+          "action": "db",
+          "as": "steward",
+          "sql": "DELETE FROM app_wins_celebrations__wins WHERE id = ?",
+          "params": ["w-b2"],
+          "expect": { "status": 200 }
+        },
+        {
+          "action": "db",
+          "as": "b",
+          "sql": "SELECT id, title FROM app_wins_celebrations__wins",
+          "expect": { "status": 200, "rowCount": 1, "rowsContain": [{ "id": "w-b", "title": "moderated" }] }
+        }
+      ]
+    },
+    {
+      "name": "in a household any adult can edit another member's win",
+      "members": { "a": "adult", "b": "adult" },
+      "steps": [
+        {
+          "action": "seedRaw",
+          "sql": "INSERT INTO app_wins_celebrations__wins (id, author_id, title, visibility, created_at) VALUES (?, ?, ?, ?, ?)",
+          "params": ["w-b", "{{b}}", "Win w-b", "everyone", "2026-01-01T00:00:00Z"]
+        },
+        {
+          "action": "db",
+          "as": "a",
+          "sql": "UPDATE app_wins_celebrations__wins SET title = ? WHERE id = ?",
+          "params": ["edited", "w-b"],
+          "expect": { "status": 200 }
+        },
+        {
+          "action": "db",
+          "as": "b",
+          "sql": "SELECT title FROM app_wins_celebrations__wins",
+          "expect": { "status": 200, "rowCount": 1, "rowsContain": [{ "title": "edited" }] }
+        }
+      ]
     }
   ]
 }
