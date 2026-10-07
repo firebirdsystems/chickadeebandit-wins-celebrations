@@ -36,7 +36,7 @@
       color: #9ca3af;
       text-align: center;
     }
-    .empty .icon { font-size: 1.8rem; }
+    .empty .icon { display: block; margin-bottom: 6px; }
     .empty p { font-size: 12px; }
 
     .win-row {
@@ -64,25 +64,29 @@
 <body>
 
 <div class="header">
-  <span class="header-icon">🏆</span>
+  <span class="header-icon"></span>
   <span class="header-title">Wins</span>
   <a class="header-link" href="/run/wins-celebrations">Open</a>
 </div>
 
 <div class="content" id="content">
   <div class="empty">
-    <span class="icon">🏆</span>
+    <span class="icon"></span>
     <p>No wins yet</p>
   </div>
 </div>
 
 <script type="module">
-import { esc, memberColor, initial, formatRelativeDate } from "/hub-sdk.js";
+import { esc, memberColor, initial, formatRelativeDate, glyph, chickadee } from "/hub-sdk.js";
+
+// The header mark and the resting empty state are static markup, drawn here.
+document.querySelector(".header-icon").innerHTML = glyph("trophy");
+document.querySelector(".empty .icon").innerHTML = chickadee("nest", { size: 56 });
 
 const DB      = window.__DB_URL      ?? "";
 const CONTEXT = window.__CONTEXT_URL ?? "";
 
-const CATEGORY_ICONS = { grade: "📝", goal: "🎯", milestone: "🌟", other: "🎉" };
+const CATEGORY_GLYPHS = { grade: "note", goal: "goal-ring", milestone: "star", other: "sparkles" };
 
 async function db(sql, params = []) {
   if (!DB) return { rows: [] };
@@ -130,7 +134,7 @@ async function init() {
           <div class="win-title">${esc(w.title)}</div>
           <div class="win-meta">${esc(name)} · ${esc(formatRelativeDate(w.created_at))}</div>
         </div>
-        <span class="win-category">${CATEGORY_ICONS[w.category] || "🎉"}</span>
+        <span class="win-category">${glyph(CATEGORY_GLYPHS[w.category] || "sparkles")}</span>
       </div>
     `;
   }).join("");

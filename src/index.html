@@ -91,7 +91,7 @@
       padding: 60px 16px;
       color: var(--muted);
     }
-    .empty .trophy { font-size: 3rem; margin-bottom: 12px; }
+    .empty .trophy { margin-bottom: 12px; }
     .empty p { font-size: 0.95rem; }
 
     /* ── Win card ───────────────────────────────────────── */
@@ -369,7 +369,7 @@
 <body>
 <div class="app" id="app">
   <div class="header">
-    <h1>🏆 Wins &amp; Celebrations</h1>
+    <h1><span id="page-glyph"></span> Wins &amp; Celebrations</h1>
     <button class="btn btn-primary btn-sm" data-testid="post-win" onclick="openPostModal()">+ Post a Win</button>
   </div>
   <div class="search-row" id="search-row" style="display:none">
@@ -379,7 +379,10 @@
 </div>
 
 <script type="module">
-import { memberColor, initial, esc, isAdult, formatRelativeDate, hubConfirm, searchMatch, logHubActivity } from "/hub-sdk.js";
+import { memberColor, initial, esc, isAdult, formatRelativeDate, hubConfirm, searchMatch, logHubActivity, glyph, chickadee } from "/hub-sdk.js";
+
+// The page heading is static markup; its mark comes from the SDK.
+document.getElementById("page-glyph").innerHTML = glyph("trophy");
 import {
   VALID_EMOJIS, CATEGORIES, categoryLabel,
   sortWinsByDate, reactionSummary, memberReacted,
@@ -529,14 +532,14 @@ function render() {
   const sorted = searchQ ? all.filter(w => searchMatch(searchQ, searchableFields(w))) : all;
 
   if (wins.length && sorted.length === 0) {
-    feed.innerHTML = `<div class="empty"><div class="trophy">🔍</div><p>No wins match "${esc(searchQ)}".</p></div>`;
+    feed.innerHTML = `<div class="empty"><div class="trophy">${chickadee("searching", { size: 72 })}</div><p>No wins match "${esc(searchQ)}".</p></div>`;
     return;
   }
 
   if (sorted.length === 0) {
     feed.innerHTML = `
       <div class="empty">
-        <div class="trophy">🏆</div>
+        <div class="trophy">${chickadee("nest", { size: 72 })}</div>
         <p>No wins yet — be the first to share something worth celebrating!</p>
       </div>`;
     return;
@@ -590,7 +593,7 @@ function renderWin(win) {
             <div class="win-author">${esc(author.name)}</div>
             <div class="win-time">${esc(formatRelativeDate(win.created_at))}</div>
           </div>
-          ${canDelete ? `<button class="win-delete-btn" data-action="delete-win" data-win-id="${esc(win.id)}" title="Delete">✕</button>` : ""}
+          ${canDelete ? `<button class="win-delete-btn" data-action="delete-win" data-win-id="${esc(win.id)}" title="Delete" aria-label="Delete">${glyph("close")}</button>` : ""}
         </div>
         <div class="category-badge ${catClass}">${esc(categoryLabel(win.category))}</div>
         <div class="win-title" data-testid="win-title">${esc(win.title)}</div>
@@ -614,7 +617,7 @@ function renderComment(c) {
         <div class="comment-header">
           <span class="comment-author">${esc(author.name)}</span>
           <span class="comment-time">${esc(formatRelativeDate(c.created_at))}</span>
-          ${canDel ? `<button class="comment-delete" data-action="delete-comment" data-comment-id="${esc(c.id)}" data-win-id="${esc(c.win_id)}" title="Delete">✕</button>` : ""}
+          ${canDel ? `<button class="comment-delete" data-action="delete-comment" data-comment-id="${esc(c.id)}" data-win-id="${esc(c.win_id)}" title="Delete" aria-label="Delete">${glyph("close")}</button>` : ""}
         </div>
         <div class="comment-body">${esc(c.body)}</div>
       </div>
@@ -744,7 +747,7 @@ window.closeModal = closeModal;
 
 window.openPostModal = function() {
   openModal(`
-    <h2>🏆 Post a Win</h2>
+    <h2>${glyph("trophy")} Post a Win</h2>
 
     <div class="form-field">
       <label class="form-label" for="f-title">What's the win? *</label>
