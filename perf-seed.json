@@ -1,0 +1,1759 @@
+{
+  "seed": [
+    {
+      "sql": "INSERT INTO app_wins_celebrations__wins (id, author_id, title, category, created_at, visibility) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-1 days','+0 minutes'), ?)",
+      "params": [
+        "perf-win-01",
+        "{{child}}",
+        "Won the science fair",
+        "goal",
+        "everyone"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__win_reactions (id, win_id, member_id, emoji, created_at) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-1 days','+11 minutes'))",
+      "params": [
+        "perf-react-001",
+        "perf-win-01",
+        "{{partner}}",
+        "🔥"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__win_reactions (id, win_id, member_id, emoji, created_at) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-1 days','+12 minutes'))",
+      "params": [
+        "perf-react-002",
+        "perf-win-01",
+        "{{adult2}}",
+        "❤️"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__win_reactions (id, win_id, member_id, emoji, created_at) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-1 days','+14 minutes'))",
+      "params": [
+        "perf-react-003",
+        "perf-win-01",
+        "{{child2}}",
+        "⭐"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__win_comments (id, win_id, author_id, body, created_at) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-1 days','+30 minutes'))",
+      "params": [
+        "perf-wcom-001",
+        "perf-win-01",
+        "{{partner}}",
+        "So proud of you!"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__wins (id, author_id, title, body, category, created_at, visibility) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-3 days','+563 minutes'), ?)",
+      "params": [
+        "perf-win-02",
+        "{{child2}}",
+        "Read 20 books this summer",
+        "Finished the library challenge two weeks early.",
+        "goal",
+        "everyone"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__win_reactions (id, win_id, member_id, emoji, created_at) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-3 days','+573 minutes'))",
+      "params": [
+        "perf-react-004",
+        "perf-win-02",
+        "{{me}}",
+        "🔥"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__win_reactions (id, win_id, member_id, emoji, created_at) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-3 days','+574 minutes'))",
+      "params": [
+        "perf-react-005",
+        "perf-win-02",
+        "{{partner}}",
+        "❤️"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__win_reactions (id, win_id, member_id, emoji, created_at) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-3 days','+576 minutes'))",
+      "params": [
+        "perf-react-006",
+        "perf-win-02",
+        "{{child}}",
+        "⭐"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__win_comments (id, win_id, author_id, body, created_at) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-3 days','+593 minutes'))",
+      "params": [
+        "perf-wcom-002",
+        "perf-win-02",
+        "{{me}}",
+        "This made my whole day."
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__win_comments (id, win_id, author_id, body, created_at) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-3 days','+602 minutes'))",
+      "params": [
+        "perf-wcom-003",
+        "perf-win-02",
+        "{{adult2}}",
+        "Legend."
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__wins (id, author_id, title, body, category, created_at, visibility) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-5 days','+526 minutes'), ?)",
+      "params": [
+        "perf-win-03",
+        "{{me}}",
+        "Ran my first 10K",
+        "Did not walk once. Legs are jelly.",
+        "milestone",
+        "everyone"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__win_reactions (id, win_id, member_id, emoji, created_at) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-5 days','+538 minutes'))",
+      "params": [
+        "perf-react-007",
+        "perf-win-03",
+        "{{adult2}}",
+        "⭐"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__win_reactions (id, win_id, member_id, emoji, created_at) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-5 days','+539 minutes'))",
+      "params": [
+        "perf-react-008",
+        "perf-win-03",
+        "{{child}}",
+        "🎉"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__wins (id, author_id, title, body, category, created_at, visibility) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-7 days','+489 minutes'), ?)",
+      "params": [
+        "perf-win-04",
+        "{{partner}}",
+        "Finished the deck",
+        "Three weekends, one trip to the ER for a splinter, done.",
+        "goal",
+        "everyone"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__win_reactions (id, win_id, member_id, emoji, created_at) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-7 days','+501 minutes'))",
+      "params": [
+        "perf-react-009",
+        "perf-win-04",
+        "{{adult2}}",
+        "🎉"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__win_reactions (id, win_id, member_id, emoji, created_at) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-7 days','+503 minutes'))",
+      "params": [
+        "perf-react-010",
+        "perf-win-04",
+        "{{child2}}",
+        "❤️"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__win_comments (id, win_id, author_id, body, created_at) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-7 days','+519 minutes'))",
+      "params": [
+        "perf-wcom-004",
+        "perf-win-04",
+        "{{child}}",
+        "Ice cream tonight to celebrate."
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__win_comments (id, win_id, author_id, body, created_at) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-7 days','+528 minutes'))",
+      "params": [
+        "perf-wcom-005",
+        "perf-win-04",
+        "{{child2}}",
+        "Framing this one."
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__wins (id, author_id, title, body, category, created_at, visibility) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-10 days','+452 minutes'), ?)",
+      "params": [
+        "perf-win-05",
+        "{{child}}",
+        "A on the maths test",
+        "Fractions finally clicked.",
+        "grade",
+        "everyone"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__win_reactions (id, win_id, member_id, emoji, created_at) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-10 days','+462 minutes'))",
+      "params": [
+        "perf-react-011",
+        "perf-win-05",
+        "{{me}}",
+        "⭐"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__win_reactions (id, win_id, member_id, emoji, created_at) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-10 days','+463 minutes'))",
+      "params": [
+        "perf-react-012",
+        "perf-win-05",
+        "{{partner}}",
+        "🎉"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__win_reactions (id, win_id, member_id, emoji, created_at) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-10 days','+466 minutes'))",
+      "params": [
+        "perf-react-013",
+        "perf-win-05",
+        "{{child2}}",
+        "👏"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__win_comments (id, win_id, author_id, body, created_at) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-10 days','+482 minutes'))",
+      "params": [
+        "perf-wcom-006",
+        "perf-win-05",
+        "{{child2}}",
+        "Legend."
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__wins (id, author_id, title, category, created_at, visibility) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-12 days','+415 minutes'), ?)",
+      "params": [
+        "perf-win-06",
+        "{{child2}}",
+        "Lost my first tooth",
+        "milestone",
+        "everyone"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__win_reactions (id, win_id, member_id, emoji, created_at) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-12 days','+425 minutes'))",
+      "params": [
+        "perf-react-014",
+        "perf-win-06",
+        "{{me}}",
+        "🎉"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__win_reactions (id, win_id, member_id, emoji, created_at) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-12 days','+427 minutes'))",
+      "params": [
+        "perf-react-015",
+        "perf-win-06",
+        "{{adult2}}",
+        "❤️"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__win_reactions (id, win_id, member_id, emoji, created_at) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-12 days','+428 minutes'))",
+      "params": [
+        "perf-react-016",
+        "perf-win-06",
+        "{{child}}",
+        "👏"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__wins (id, author_id, title, body, category, created_at, visibility) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-14 days','+378 minutes'), ?)",
+      "params": [
+        "perf-win-07",
+        "{{adult2}}",
+        "Passed the certification exam",
+        "Six months of evenings paid off.",
+        "milestone",
+        "everyone"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__win_reactions (id, win_id, member_id, emoji, created_at) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-14 days','+389 minutes'))",
+      "params": [
+        "perf-react-017",
+        "perf-win-07",
+        "{{partner}}",
+        "❤️"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__win_reactions (id, win_id, member_id, emoji, created_at) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-14 days','+392 minutes'))",
+      "params": [
+        "perf-react-018",
+        "perf-win-07",
+        "{{child2}}",
+        "🎉"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__win_comments (id, win_id, author_id, body, created_at) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-14 days','+408 minutes'))",
+      "params": [
+        "perf-wcom-007",
+        "perf-win-07",
+        "{{me}}",
+        "Framing this one."
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__wins (id, author_id, title, body, category, created_at, visibility) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-17 days','+341 minutes'), ?)",
+      "params": [
+        "perf-win-08",
+        "{{me}}",
+        "Inbox zero",
+        "It lasted eleven minutes but it happened.",
+        "other",
+        "private"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__wins (id, author_id, title, body, category, created_at, visibility) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-19 days','+304 minutes'), ?)",
+      "params": [
+        "perf-win-09",
+        "{{child}}",
+        "Made the soccer team",
+        "Starting midfield on Saturday.",
+        "goal",
+        "everyone"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__win_reactions (id, win_id, member_id, emoji, created_at) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-19 days','+314 minutes'))",
+      "params": [
+        "perf-react-019",
+        "perf-win-09",
+        "{{me}}",
+        "👏"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__win_reactions (id, win_id, member_id, emoji, created_at) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-19 days','+316 minutes'))",
+      "params": [
+        "perf-react-020",
+        "perf-win-09",
+        "{{adult2}}",
+        "🎉"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__wins (id, author_id, title, body, category, created_at, visibility) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-21 days','+267 minutes'), ?)",
+      "params": [
+        "perf-win-10",
+        "{{partner}}",
+        "Promoted at work",
+        "New title starts next month.",
+        "milestone",
+        "private"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__wins (id, author_id, title, category, created_at, visibility) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-24 days','+230 minutes'), ?)",
+      "params": [
+        "perf-win-11",
+        "{{child2}}",
+        "Rode a bike without training wheels",
+        "milestone",
+        "everyone"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__win_reactions (id, win_id, member_id, emoji, created_at) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-24 days','+240 minutes'))",
+      "params": [
+        "perf-react-021",
+        "perf-win-11",
+        "{{me}}",
+        "🎉"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__win_reactions (id, win_id, member_id, emoji, created_at) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-24 days','+241 minutes'))",
+      "params": [
+        "perf-react-022",
+        "perf-win-11",
+        "{{partner}}",
+        "🔥"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__win_reactions (id, win_id, member_id, emoji, created_at) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-24 days','+243 minutes'))",
+      "params": [
+        "perf-react-023",
+        "perf-win-11",
+        "{{child}}",
+        "👏"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__win_comments (id, win_id, author_id, body, created_at) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-24 days','+260 minutes'))",
+      "params": [
+        "perf-wcom-008",
+        "perf-win-11",
+        "{{partner}}",
+        "So proud of you!"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__wins (id, author_id, title, body, category, created_at, visibility) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-26 days','+193 minutes'), ?)",
+      "params": [
+        "perf-win-12",
+        "{{child}}",
+        "Perfect attendance this term",
+        "Not a single late morning.",
+        "grade",
+        "everyone"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__win_reactions (id, win_id, member_id, emoji, created_at) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-26 days','+203 minutes'))",
+      "params": [
+        "perf-react-024",
+        "perf-win-12",
+        "{{me}}",
+        "🔥"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__win_reactions (id, win_id, member_id, emoji, created_at) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-26 days','+205 minutes'))",
+      "params": [
+        "perf-react-025",
+        "perf-win-12",
+        "{{adult2}}",
+        "👏"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__wins (id, author_id, title, body, category, created_at, visibility) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-28 days','+156 minutes'), ?)",
+      "params": [
+        "perf-win-13",
+        "{{me}}",
+        "Paid off the car",
+        "Last payment went out today.",
+        "milestone",
+        "everyone"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__win_reactions (id, win_id, member_id, emoji, created_at) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-28 days','+167 minutes'))",
+      "params": [
+        "perf-react-026",
+        "perf-win-13",
+        "{{partner}}",
+        "👏"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__win_reactions (id, win_id, member_id, emoji, created_at) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-28 days','+168 minutes'))",
+      "params": [
+        "perf-react-027",
+        "perf-win-13",
+        "{{adult2}}",
+        "⭐"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__win_reactions (id, win_id, member_id, emoji, created_at) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-28 days','+170 minutes'))",
+      "params": [
+        "perf-react-028",
+        "perf-win-13",
+        "{{child2}}",
+        "🔥"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__win_comments (id, win_id, author_id, body, created_at) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-28 days','+186 minutes'))",
+      "params": [
+        "perf-wcom-009",
+        "perf-win-13",
+        "{{adult2}}",
+        "Told you that you could do it."
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__wins (id, author_id, title, body, category, created_at, visibility) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-30 days','+119 minutes'), ?)",
+      "params": [
+        "perf-win-14",
+        "{{child2}}",
+        "Star of the week",
+        "Ms Ito said it was for helping a new classmate.",
+        "grade",
+        "everyone"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__win_reactions (id, win_id, member_id, emoji, created_at) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-30 days','+129 minutes'))",
+      "params": [
+        "perf-react-029",
+        "perf-win-14",
+        "{{me}}",
+        "👏"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__win_reactions (id, win_id, member_id, emoji, created_at) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-30 days','+130 minutes'))",
+      "params": [
+        "perf-react-030",
+        "perf-win-14",
+        "{{partner}}",
+        "⭐"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__win_reactions (id, win_id, member_id, emoji, created_at) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-30 days','+132 minutes'))",
+      "params": [
+        "perf-react-031",
+        "perf-win-14",
+        "{{child}}",
+        "🔥"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__win_comments (id, win_id, author_id, body, created_at) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-30 days','+149 minutes'))",
+      "params": [
+        "perf-wcom-010",
+        "perf-win-14",
+        "{{child}}",
+        "Ice cream tonight to celebrate."
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__win_comments (id, win_id, author_id, body, created_at) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-30 days','+158 minutes'))",
+      "params": [
+        "perf-wcom-011",
+        "perf-win-14",
+        "{{me}}",
+        "Framing this one."
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__wins (id, author_id, title, body, category, created_at, visibility) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-33 days','+82 minutes'), ?)",
+      "params": [
+        "perf-win-15",
+        "{{partner}}",
+        "Sourdough finally rose",
+        "Attempt number nine.",
+        "other",
+        "everyone"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__win_reactions (id, win_id, member_id, emoji, created_at) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-33 days','+92 minutes'))",
+      "params": [
+        "perf-react-032",
+        "perf-win-15",
+        "{{me}}",
+        "⭐"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__win_reactions (id, win_id, member_id, emoji, created_at) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-33 days','+94 minutes'))",
+      "params": [
+        "perf-react-033",
+        "perf-win-15",
+        "{{adult2}}",
+        "🔥"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__win_reactions (id, win_id, member_id, emoji, created_at) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-33 days','+95 minutes'))",
+      "params": [
+        "perf-react-034",
+        "perf-win-15",
+        "{{child}}",
+        "❤️"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__wins (id, author_id, title, category, created_at, visibility) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-35 days','+45 minutes'), ?)",
+      "params": [
+        "perf-win-16",
+        "{{adult2}}",
+        "Fixed the leaky tap",
+        "other",
+        "everyone"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__win_reactions (id, win_id, member_id, emoji, created_at) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-35 days','+56 minutes'))",
+      "params": [
+        "perf-react-035",
+        "perf-win-16",
+        "{{partner}}",
+        "🔥"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__win_reactions (id, win_id, member_id, emoji, created_at) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-35 days','+59 minutes'))",
+      "params": [
+        "perf-react-036",
+        "perf-win-16",
+        "{{child2}}",
+        "⭐"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__win_comments (id, win_id, author_id, body, created_at) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-35 days','+75 minutes'))",
+      "params": [
+        "perf-wcom-012",
+        "perf-win-16",
+        "{{partner}}",
+        "How did you even do that?"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__win_comments (id, win_id, author_id, body, created_at) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-35 days','+84 minutes'))",
+      "params": [
+        "perf-wcom-013",
+        "perf-win-16",
+        "{{me}}",
+        "We should do this every week."
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__wins (id, author_id, title, body, category, created_at, visibility) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-37 days','+8 minutes'), ?)",
+      "params": [
+        "perf-win-17",
+        "{{child}}",
+        "Finished the 1000-piece puzzle",
+        "The sky took three days on its own.",
+        "goal",
+        "everyone"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__win_reactions (id, win_id, member_id, emoji, created_at) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-37 days','+18 minutes'))",
+      "params": [
+        "perf-react-037",
+        "perf-win-17",
+        "{{me}}",
+        "🔥"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__win_reactions (id, win_id, member_id, emoji, created_at) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-37 days','+19 minutes'))",
+      "params": [
+        "perf-react-038",
+        "perf-win-17",
+        "{{partner}}",
+        "❤️"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__win_reactions (id, win_id, member_id, emoji, created_at) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-37 days','+22 minutes'))",
+      "params": [
+        "perf-react-039",
+        "perf-win-17",
+        "{{child2}}",
+        "🎉"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__win_comments (id, win_id, author_id, body, created_at) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-37 days','+38 minutes'))",
+      "params": [
+        "perf-wcom-014",
+        "perf-win-17",
+        "{{me}}",
+        "Framing this one."
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__wins (id, author_id, title, body, category, created_at, visibility) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-40 days','+571 minutes'), ?)",
+      "params": [
+        "perf-win-18",
+        "{{me}}",
+        "Six months of morning walks",
+        "Rain or shine.",
+        "milestone",
+        "private"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__wins (id, author_id, title, body, category, created_at, visibility) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-42 days','+534 minutes'), ?)",
+      "params": [
+        "perf-win-19",
+        "{{child2}}",
+        "Learned to tie my shoes",
+        "Bunny ears method.",
+        "milestone",
+        "everyone"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__win_reactions (id, win_id, member_id, emoji, created_at) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-42 days','+545 minutes'))",
+      "params": [
+        "perf-react-040",
+        "perf-win-19",
+        "{{partner}}",
+        "⭐"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__win_reactions (id, win_id, member_id, emoji, created_at) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-42 days','+546 minutes'))",
+      "params": [
+        "perf-react-041",
+        "perf-win-19",
+        "{{adult2}}",
+        "🎉"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__win_comments (id, win_id, author_id, body, created_at) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-42 days','+564 minutes'))",
+      "params": [
+        "perf-wcom-015",
+        "perf-win-19",
+        "{{child}}",
+        "We should do this every week."
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__wins (id, author_id, title, body, category, created_at, visibility) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-44 days','+497 minutes'), ?)",
+      "params": [
+        "perf-win-20",
+        "{{child}}",
+        "Book report got read to the class",
+        "Mr Brandt picked mine.",
+        "grade",
+        "everyone"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__win_reactions (id, win_id, member_id, emoji, created_at) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-44 days','+507 minutes'))",
+      "params": [
+        "perf-react-042",
+        "perf-win-20",
+        "{{me}}",
+        "⭐"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__win_reactions (id, win_id, member_id, emoji, created_at) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-44 days','+508 minutes'))",
+      "params": [
+        "perf-react-043",
+        "perf-win-20",
+        "{{partner}}",
+        "🎉"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__win_reactions (id, win_id, member_id, emoji, created_at) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-44 days','+511 minutes'))",
+      "params": [
+        "perf-react-044",
+        "perf-win-20",
+        "{{child2}}",
+        "👏"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__win_comments (id, win_id, author_id, body, created_at) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-44 days','+527 minutes'))",
+      "params": [
+        "perf-wcom-016",
+        "perf-win-20",
+        "{{child2}}",
+        "Amazing work!"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__win_comments (id, win_id, author_id, body, created_at) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-44 days','+536 minutes'))",
+      "params": [
+        "perf-wcom-017",
+        "perf-win-20",
+        "{{partner}}",
+        "Told you that you could do it."
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__wins (id, author_id, title, category, created_at, visibility) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-47 days','+460 minutes'), ?)",
+      "params": [
+        "perf-win-21",
+        "{{child}}",
+        "Won the science fair, round 2",
+        "goal",
+        "everyone"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__win_reactions (id, win_id, member_id, emoji, created_at) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-47 days','+470 minutes'))",
+      "params": [
+        "perf-react-045",
+        "perf-win-21",
+        "{{me}}",
+        "🎉"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__win_reactions (id, win_id, member_id, emoji, created_at) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-47 days','+472 minutes'))",
+      "params": [
+        "perf-react-046",
+        "perf-win-21",
+        "{{adult2}}",
+        "❤️"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__wins (id, author_id, title, body, category, created_at, visibility) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-49 days','+423 minutes'), ?)",
+      "params": [
+        "perf-win-22",
+        "{{child2}}",
+        "Read 20 books this summer again",
+        "Finished the library challenge two weeks early.",
+        "goal",
+        "everyone"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__win_reactions (id, win_id, member_id, emoji, created_at) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-49 days','+434 minutes'))",
+      "params": [
+        "perf-react-047",
+        "perf-win-22",
+        "{{partner}}",
+        "❤️"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__win_reactions (id, win_id, member_id, emoji, created_at) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-49 days','+435 minutes'))",
+      "params": [
+        "perf-react-048",
+        "perf-win-22",
+        "{{adult2}}",
+        "👏"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__win_comments (id, win_id, author_id, body, created_at) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-49 days','+453 minutes'))",
+      "params": [
+        "perf-wcom-018",
+        "perf-win-22",
+        "{{me}}",
+        "This made my whole day."
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__win_comments (id, win_id, author_id, body, created_at) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-49 days','+462 minutes'))",
+      "params": [
+        "perf-wcom-019",
+        "perf-win-22",
+        "{{adult2}}",
+        "Legend."
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__wins (id, author_id, title, body, category, created_at, visibility) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-51 days','+386 minutes'), ?)",
+      "params": [
+        "perf-win-23",
+        "{{me}}",
+        "Another one: ran my first 10K",
+        "Did not walk once. Legs are jelly.",
+        "milestone",
+        "everyone"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__win_reactions (id, win_id, member_id, emoji, created_at) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-51 days','+397 minutes'))",
+      "params": [
+        "perf-react-049",
+        "perf-win-23",
+        "{{partner}}",
+        "👏"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__win_reactions (id, win_id, member_id, emoji, created_at) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-51 days','+399 minutes'))",
+      "params": [
+        "perf-react-050",
+        "perf-win-23",
+        "{{child}}",
+        "🎉"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__win_reactions (id, win_id, member_id, emoji, created_at) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-51 days','+400 minutes'))",
+      "params": [
+        "perf-react-051",
+        "perf-win-23",
+        "{{child2}}",
+        "🔥"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__win_comments (id, win_id, author_id, body, created_at) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-51 days','+416 minutes'))",
+      "params": [
+        "perf-wcom-020",
+        "perf-win-23",
+        "{{adult2}}",
+        "Told you that you could do it."
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__wins (id, author_id, title, body, category, created_at, visibility) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-53 days','+349 minutes'), ?)",
+      "params": [
+        "perf-win-24",
+        "{{partner}}",
+        "Finished the deck, round 2",
+        "Three weekends, one trip to the ER for a splinter, done.",
+        "goal",
+        "everyone"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__win_reactions (id, win_id, member_id, emoji, created_at) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-53 days','+359 minutes'))",
+      "params": [
+        "perf-react-052",
+        "perf-win-24",
+        "{{me}}",
+        "👏"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__win_reactions (id, win_id, member_id, emoji, created_at) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-53 days','+361 minutes'))",
+      "params": [
+        "perf-react-053",
+        "perf-win-24",
+        "{{adult2}}",
+        "🎉"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__win_reactions (id, win_id, member_id, emoji, created_at) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-53 days','+362 minutes'))",
+      "params": [
+        "perf-react-054",
+        "perf-win-24",
+        "{{child}}",
+        "🔥"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__wins (id, author_id, title, body, category, created_at, visibility) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-56 days','+312 minutes'), ?)",
+      "params": [
+        "perf-win-25",
+        "{{child}}",
+        "A on the maths test again",
+        "Fractions finally clicked.",
+        "grade",
+        "everyone"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__win_reactions (id, win_id, member_id, emoji, created_at) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-56 days','+323 minutes'))",
+      "params": [
+        "perf-react-055",
+        "perf-win-25",
+        "{{partner}}",
+        "🎉"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__win_reactions (id, win_id, member_id, emoji, created_at) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-56 days','+324 minutes'))",
+      "params": [
+        "perf-react-056",
+        "perf-win-25",
+        "{{adult2}}",
+        "🔥"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__win_reactions (id, win_id, member_id, emoji, created_at) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-56 days','+326 minutes'))",
+      "params": [
+        "perf-react-057",
+        "perf-win-25",
+        "{{child2}}",
+        "👏"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__win_comments (id, win_id, author_id, body, created_at) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-56 days','+342 minutes'))",
+      "params": [
+        "perf-wcom-021",
+        "perf-win-25",
+        "{{child2}}",
+        "Legend."
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__wins (id, author_id, title, category, created_at, visibility) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-58 days','+275 minutes'), ?)",
+      "params": [
+        "perf-win-26",
+        "{{child2}}",
+        "Another one: lost my first tooth",
+        "milestone",
+        "everyone"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__win_reactions (id, win_id, member_id, emoji, created_at) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-58 days','+285 minutes'))",
+      "params": [
+        "perf-react-058",
+        "perf-win-26",
+        "{{me}}",
+        "🎉"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__win_reactions (id, win_id, member_id, emoji, created_at) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-58 days','+286 minutes'))",
+      "params": [
+        "perf-react-059",
+        "perf-win-26",
+        "{{partner}}",
+        "🔥"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__win_reactions (id, win_id, member_id, emoji, created_at) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-58 days','+288 minutes'))",
+      "params": [
+        "perf-react-060",
+        "perf-win-26",
+        "{{child}}",
+        "👏"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__win_comments (id, win_id, author_id, body, created_at) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-58 days','+305 minutes'))",
+      "params": [
+        "perf-wcom-022",
+        "perf-win-26",
+        "{{partner}}",
+        "How did you even do that?"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__win_comments (id, win_id, author_id, body, created_at) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-58 days','+314 minutes'))",
+      "params": [
+        "perf-wcom-023",
+        "perf-win-26",
+        "{{me}}",
+        "We should do this every week."
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__wins (id, author_id, title, body, category, created_at, visibility) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-60 days','+238 minutes'), ?)",
+      "params": [
+        "perf-win-27",
+        "{{adult2}}",
+        "Passed the certification exam, round 2",
+        "Six months of evenings paid off.",
+        "milestone",
+        "everyone"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__win_reactions (id, win_id, member_id, emoji, created_at) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-60 days','+248 minutes'))",
+      "params": [
+        "perf-react-061",
+        "perf-win-27",
+        "{{me}}",
+        "🔥"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__win_reactions (id, win_id, member_id, emoji, created_at) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-60 days','+251 minutes'))",
+      "params": [
+        "perf-react-062",
+        "perf-win-27",
+        "{{child}}",
+        "⭐"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__wins (id, author_id, title, body, category, created_at, visibility) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-63 days','+201 minutes'), ?)",
+      "params": [
+        "perf-win-28",
+        "{{me}}",
+        "Inbox zero again",
+        "It lasted eleven minutes but it happened.",
+        "other",
+        "everyone"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__win_reactions (id, win_id, member_id, emoji, created_at) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-63 days','+212 minutes'))",
+      "params": [
+        "perf-react-063",
+        "perf-win-28",
+        "{{partner}}",
+        "👏"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__win_reactions (id, win_id, member_id, emoji, created_at) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-63 days','+213 minutes'))",
+      "params": [
+        "perf-react-064",
+        "perf-win-28",
+        "{{adult2}}",
+        "⭐"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__win_reactions (id, win_id, member_id, emoji, created_at) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-63 days','+215 minutes'))",
+      "params": [
+        "perf-react-065",
+        "perf-win-28",
+        "{{child2}}",
+        "🔥"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__win_comments (id, win_id, author_id, body, created_at) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-63 days','+231 minutes'))",
+      "params": [
+        "perf-wcom-024",
+        "perf-win-28",
+        "{{adult2}}",
+        "Next stop, world domination."
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__win_comments (id, win_id, author_id, body, created_at) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-63 days','+240 minutes'))",
+      "params": [
+        "perf-wcom-025",
+        "perf-win-28",
+        "{{child}}",
+        "So proud of you!"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__wins (id, author_id, title, body, category, created_at, visibility) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-65 days','+164 minutes'), ?)",
+      "params": [
+        "perf-win-29",
+        "{{child}}",
+        "Another one: made the soccer team",
+        "Starting midfield on Saturday.",
+        "goal",
+        "everyone"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__win_reactions (id, win_id, member_id, emoji, created_at) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-65 days','+174 minutes'))",
+      "params": [
+        "perf-react-066",
+        "perf-win-29",
+        "{{me}}",
+        "👏"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__win_reactions (id, win_id, member_id, emoji, created_at) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-65 days','+175 minutes'))",
+      "params": [
+        "perf-react-067",
+        "perf-win-29",
+        "{{partner}}",
+        "⭐"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__win_reactions (id, win_id, member_id, emoji, created_at) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-65 days','+178 minutes'))",
+      "params": [
+        "perf-react-068",
+        "perf-win-29",
+        "{{child2}}",
+        "❤️"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__win_comments (id, win_id, author_id, body, created_at) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-65 days','+194 minutes'))",
+      "params": [
+        "perf-wcom-026",
+        "perf-win-29",
+        "{{me}}",
+        "We should do this every week."
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__wins (id, author_id, title, body, category, created_at, visibility) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-67 days','+127 minutes'), ?)",
+      "params": [
+        "perf-win-30",
+        "{{partner}}",
+        "Promoted at work, round 2",
+        "New title starts next month.",
+        "milestone",
+        "everyone"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__win_reactions (id, win_id, member_id, emoji, created_at) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-67 days','+137 minutes'))",
+      "params": [
+        "perf-react-069",
+        "perf-win-30",
+        "{{me}}",
+        "⭐"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__win_reactions (id, win_id, member_id, emoji, created_at) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-67 days','+139 minutes'))",
+      "params": [
+        "perf-react-070",
+        "perf-win-30",
+        "{{adult2}}",
+        "🔥"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__win_reactions (id, win_id, member_id, emoji, created_at) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-67 days','+140 minutes'))",
+      "params": [
+        "perf-react-071",
+        "perf-win-30",
+        "{{child}}",
+        "❤️"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__wins (id, author_id, title, category, created_at, visibility) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-70 days','+90 minutes'), ?)",
+      "params": [
+        "perf-win-31",
+        "{{child2}}",
+        "Rode a bike without training wheels again",
+        "milestone",
+        "everyone"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__win_reactions (id, win_id, member_id, emoji, created_at) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-70 days','+101 minutes'))",
+      "params": [
+        "perf-react-072",
+        "perf-win-31",
+        "{{partner}}",
+        "🔥"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__win_reactions (id, win_id, member_id, emoji, created_at) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-70 days','+102 minutes'))",
+      "params": [
+        "perf-react-073",
+        "perf-win-31",
+        "{{adult2}}",
+        "❤️"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__win_comments (id, win_id, author_id, body, created_at) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-70 days','+120 minutes'))",
+      "params": [
+        "perf-wcom-027",
+        "perf-win-31",
+        "{{partner}}",
+        "So proud of you!"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__wins (id, author_id, title, body, category, created_at, visibility) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-72 days','+53 minutes'), ?)",
+      "params": [
+        "perf-win-32",
+        "{{child}}",
+        "Another one: perfect attendance this term",
+        "Not a single late morning.",
+        "grade",
+        "everyone"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__win_reactions (id, win_id, member_id, emoji, created_at) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-72 days','+63 minutes'))",
+      "params": [
+        "perf-react-074",
+        "perf-win-32",
+        "{{me}}",
+        "🔥"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__win_reactions (id, win_id, member_id, emoji, created_at) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-72 days','+64 minutes'))",
+      "params": [
+        "perf-react-075",
+        "perf-win-32",
+        "{{partner}}",
+        "❤️"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__win_reactions (id, win_id, member_id, emoji, created_at) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-72 days','+67 minutes'))",
+      "params": [
+        "perf-react-076",
+        "perf-win-32",
+        "{{child2}}",
+        "🎉"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__win_comments (id, win_id, author_id, body, created_at) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-72 days','+83 minutes'))",
+      "params": [
+        "perf-wcom-028",
+        "perf-win-32",
+        "{{me}}",
+        "This made my whole day."
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__win_comments (id, win_id, author_id, body, created_at) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-72 days','+92 minutes'))",
+      "params": [
+        "perf-wcom-029",
+        "perf-win-32",
+        "{{adult2}}",
+        "Legend."
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__wins (id, author_id, title, body, category, created_at, visibility) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-74 days','+16 minutes'), ?)",
+      "params": [
+        "perf-win-33",
+        "{{me}}",
+        "Paid off the car, round 2",
+        "Last payment went out today.",
+        "milestone",
+        "everyone"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__win_reactions (id, win_id, member_id, emoji, created_at) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-74 days','+28 minutes'))",
+      "params": [
+        "perf-react-077",
+        "perf-win-33",
+        "{{adult2}}",
+        "⭐"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__win_reactions (id, win_id, member_id, emoji, created_at) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-74 days','+29 minutes'))",
+      "params": [
+        "perf-react-078",
+        "perf-win-33",
+        "{{child}}",
+        "🎉"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__wins (id, author_id, title, body, category, created_at, visibility) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-76 days','+579 minutes'), ?)",
+      "params": [
+        "perf-win-34",
+        "{{child2}}",
+        "Star of the week again",
+        "Ms Ito said it was for helping a new classmate.",
+        "grade",
+        "everyone"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__win_reactions (id, win_id, member_id, emoji, created_at) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-76 days','+590 minutes'))",
+      "params": [
+        "perf-react-079",
+        "perf-win-34",
+        "{{partner}}",
+        "⭐"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__win_reactions (id, win_id, member_id, emoji, created_at) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-76 days','+591 minutes'))",
+      "params": [
+        "perf-react-080",
+        "perf-win-34",
+        "{{adult2}}",
+        "🎉"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__win_comments (id, win_id, author_id, body, created_at) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-76 days','+609 minutes'))",
+      "params": [
+        "perf-wcom-030",
+        "perf-win-34",
+        "{{child}}",
+        "Ice cream tonight to celebrate."
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__win_comments (id, win_id, author_id, body, created_at) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-76 days','+618 minutes'))",
+      "params": [
+        "perf-wcom-031",
+        "perf-win-34",
+        "{{me}}",
+        "Framing this one."
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__wins (id, author_id, title, body, category, created_at, visibility) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-79 days','+542 minutes'), ?)",
+      "params": [
+        "perf-win-35",
+        "{{partner}}",
+        "Another one: sourdough finally rose",
+        "Attempt number nine.",
+        "other",
+        "everyone"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__win_reactions (id, win_id, member_id, emoji, created_at) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-79 days','+552 minutes'))",
+      "params": [
+        "perf-react-081",
+        "perf-win-35",
+        "{{me}}",
+        "⭐"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__win_reactions (id, win_id, member_id, emoji, created_at) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-79 days','+555 minutes'))",
+      "params": [
+        "perf-react-082",
+        "perf-win-35",
+        "{{child}}",
+        "❤️"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__win_reactions (id, win_id, member_id, emoji, created_at) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-79 days','+556 minutes'))",
+      "params": [
+        "perf-react-083",
+        "perf-win-35",
+        "{{child2}}",
+        "👏"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__wins (id, author_id, title, category, created_at, visibility) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-81 days','+505 minutes'), ?)",
+      "params": [
+        "perf-win-36",
+        "{{adult2}}",
+        "Fixed the leaky tap, round 2",
+        "other",
+        "everyone"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__win_reactions (id, win_id, member_id, emoji, created_at) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-81 days','+515 minutes'))",
+      "params": [
+        "perf-react-084",
+        "perf-win-36",
+        "{{me}}",
+        "🎉"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__win_reactions (id, win_id, member_id, emoji, created_at) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-81 days','+518 minutes'))",
+      "params": [
+        "perf-react-085",
+        "perf-win-36",
+        "{{child}}",
+        "👏"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__wins (id, author_id, title, body, category, created_at, visibility) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-83 days','+468 minutes'), ?)",
+      "params": [
+        "perf-win-37",
+        "{{child}}",
+        "Finished the 1000-piece puzzle again",
+        "The sky took three days on its own.",
+        "goal",
+        "everyone"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__win_reactions (id, win_id, member_id, emoji, created_at) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-83 days','+479 minutes'))",
+      "params": [
+        "perf-react-086",
+        "perf-win-37",
+        "{{partner}}",
+        "❤️"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__win_reactions (id, win_id, member_id, emoji, created_at) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-83 days','+480 minutes'))",
+      "params": [
+        "perf-react-087",
+        "perf-win-37",
+        "{{adult2}}",
+        "👏"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__win_reactions (id, win_id, member_id, emoji, created_at) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-83 days','+482 minutes'))",
+      "params": [
+        "perf-react-088",
+        "perf-win-37",
+        "{{child2}}",
+        "🎉"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__wins (id, author_id, title, body, category, created_at, visibility) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-86 days','+431 minutes'), ?)",
+      "params": [
+        "perf-win-38",
+        "{{me}}",
+        "Another one: six months of morning walks",
+        "Rain or shine.",
+        "milestone",
+        "everyone"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__win_reactions (id, win_id, member_id, emoji, created_at) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-86 days','+442 minutes'))",
+      "params": [
+        "perf-react-089",
+        "perf-win-38",
+        "{{partner}}",
+        "👏"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__win_reactions (id, win_id, member_id, emoji, created_at) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-86 days','+444 minutes'))",
+      "params": [
+        "perf-react-090",
+        "perf-win-38",
+        "{{child}}",
+        "🎉"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__win_reactions (id, win_id, member_id, emoji, created_at) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-86 days','+445 minutes'))",
+      "params": [
+        "perf-react-091",
+        "perf-win-38",
+        "{{child2}}",
+        "🔥"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__wins (id, author_id, title, body, category, created_at, visibility) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-88 days','+394 minutes'), ?)",
+      "params": [
+        "perf-win-39",
+        "{{child2}}",
+        "Learned to tie my shoes, round 2",
+        "Bunny ears method.",
+        "milestone",
+        "everyone"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__win_reactions (id, win_id, member_id, emoji, created_at) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-88 days','+404 minutes'))",
+      "params": [
+        "perf-react-092",
+        "perf-win-39",
+        "{{me}}",
+        "👏"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__wins (id, author_id, title, body, category, created_at, visibility) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-90 days','+357 minutes'), ?)",
+      "params": [
+        "perf-win-40",
+        "{{child}}",
+        "Book report got read to the class again",
+        "Mr Brandt picked mine.",
+        "grade",
+        "everyone"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__wins (id, author_id, title, category, created_at, visibility) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-93 days','+320 minutes'), ?)",
+      "params": [
+        "perf-win-41",
+        "{{child}}",
+        "Another one: won the science fair",
+        "goal",
+        "everyone"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__wins (id, author_id, title, body, category, created_at, visibility) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-95 days','+283 minutes'), ?)",
+      "params": [
+        "perf-win-42",
+        "{{child2}}",
+        "Read 20 books this summer, round 3",
+        "Finished the library challenge two weeks early.",
+        "goal",
+        "everyone"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__wins (id, author_id, title, body, category, created_at, visibility) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-97 days','+246 minutes'), ?)",
+      "params": [
+        "perf-win-43",
+        "{{me}}",
+        "Ran my first 10K again",
+        "Did not walk once. Legs are jelly.",
+        "milestone",
+        "everyone"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__wins (id, author_id, title, body, category, created_at, visibility) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-99 days','+209 minutes'), ?)",
+      "params": [
+        "perf-win-44",
+        "{{partner}}",
+        "Another one: finished the deck",
+        "Three weekends, one trip to the ER for a splinter, done.",
+        "goal",
+        "everyone"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__wins (id, author_id, title, body, category, created_at, visibility) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-102 days','+172 minutes'), ?)",
+      "params": [
+        "perf-win-45",
+        "{{child}}",
+        "A on the maths test, round 3",
+        "Fractions finally clicked.",
+        "grade",
+        "everyone"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__wins (id, author_id, title, category, created_at, visibility) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-104 days','+135 minutes'), ?)",
+      "params": [
+        "perf-win-46",
+        "{{child2}}",
+        "Lost my first tooth again",
+        "milestone",
+        "everyone"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__wins (id, author_id, title, body, category, created_at, visibility) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-106 days','+98 minutes'), ?)",
+      "params": [
+        "perf-win-47",
+        "{{adult2}}",
+        "Another one: passed the certification exam",
+        "Six months of evenings paid off.",
+        "milestone",
+        "everyone"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__wins (id, author_id, title, body, category, created_at, visibility) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-109 days','+61 minutes'), ?)",
+      "params": [
+        "perf-win-48",
+        "{{me}}",
+        "Inbox zero, round 3",
+        "It lasted eleven minutes but it happened.",
+        "other",
+        "everyone"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__wins (id, author_id, title, body, category, created_at, visibility) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-111 days','+24 minutes'), ?)",
+      "params": [
+        "perf-win-49",
+        "{{child}}",
+        "Made the soccer team again",
+        "Starting midfield on Saturday.",
+        "goal",
+        "everyone"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__wins (id, author_id, title, body, category, created_at, visibility) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-113 days','+587 minutes'), ?)",
+      "params": [
+        "perf-win-50",
+        "{{partner}}",
+        "Another one: promoted at work",
+        "New title starts next month.",
+        "milestone",
+        "everyone"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__wins (id, author_id, title, category, created_at, visibility) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-115 days','+550 minutes'), ?)",
+      "params": [
+        "perf-win-51",
+        "{{child2}}",
+        "Rode a bike without training wheels, round 3",
+        "milestone",
+        "everyone"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__wins (id, author_id, title, body, category, created_at, visibility) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-118 days','+513 minutes'), ?)",
+      "params": [
+        "perf-win-52",
+        "{{child}}",
+        "Perfect attendance this term again",
+        "Not a single late morning.",
+        "grade",
+        "everyone"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__wins (id, author_id, title, body, category, created_at, visibility) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-120 days','+476 minutes'), ?)",
+      "params": [
+        "perf-win-53",
+        "{{me}}",
+        "Another one: paid off the car",
+        "Last payment went out today.",
+        "milestone",
+        "everyone"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__wins (id, author_id, title, body, category, created_at, visibility) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-122 days','+439 minutes'), ?)",
+      "params": [
+        "perf-win-54",
+        "{{child2}}",
+        "Star of the week, round 3",
+        "Ms Ito said it was for helping a new classmate.",
+        "grade",
+        "everyone"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__wins (id, author_id, title, body, category, created_at, visibility) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-125 days','+402 minutes'), ?)",
+      "params": [
+        "perf-win-55",
+        "{{partner}}",
+        "Sourdough finally rose again",
+        "Attempt number nine.",
+        "other",
+        "everyone"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__wins (id, author_id, title, category, created_at, visibility) VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-127 days','+365 minutes'), ?)",
+      "params": [
+        "perf-win-56",
+        "{{adult2}}",
+        "Another one: fixed the leaky tap",
+        "other",
+        "everyone"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__wins (id, author_id, title, body, category, created_at, visibility) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-129 days','+328 minutes'), ?)",
+      "params": [
+        "perf-win-57",
+        "{{child}}",
+        "Finished the 1000-piece puzzle, round 3",
+        "The sky took three days on its own.",
+        "goal",
+        "everyone"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__wins (id, author_id, title, body, category, created_at, visibility) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-132 days','+291 minutes'), ?)",
+      "params": [
+        "perf-win-58",
+        "{{me}}",
+        "Six months of morning walks again",
+        "Rain or shine.",
+        "milestone",
+        "everyone"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__wins (id, author_id, title, body, category, created_at, visibility) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-134 days','+254 minutes'), ?)",
+      "params": [
+        "perf-win-59",
+        "{{child2}}",
+        "Another one: learned to tie my shoes",
+        "Bunny ears method.",
+        "milestone",
+        "everyone"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_wins_celebrations__wins (id, author_id, title, body, category, created_at, visibility) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-136 days','+217 minutes'), ?)",
+      "params": [
+        "perf-win-60",
+        "{{child}}",
+        "Book report got read to the class, round 3",
+        "Mr Brandt picked mine.",
+        "grade",
+        "everyone"
+      ]
+    }
+  ]
+}
