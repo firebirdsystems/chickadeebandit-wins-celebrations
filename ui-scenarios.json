@@ -50,6 +50,21 @@
         { "action": "expectCount", "selector": "[data-testid=\"win-card\"]", "count": 1 },
         { "action": "expectNoText", "text": "Discarded Draft" }
       ]
+    },
+    {
+      "name": "in a shared space a participant is offered Delete on their own win only; the steward on anyone's",
+      "context": "shared_space",
+      "members": {"steward": "admin", "pat": "adult", "sam": "adult"},
+      "steps": [
+        {"action": "seedRaw", "sql": "INSERT INTO app_wins_celebrations__wins (id, author_id, title, body, category, created_at, visibility) VALUES (?, ?, ?, '', 'goal', datetime('now'), 'everyone'), (?, ?, ?, '', 'goal', datetime('now'), 'everyone')", "params": ["w-pat", "{{pat}}", "Finished the mural", "w-sam", "{{sam}}", "Booked the hall"]},
+        {"action": "open", "as": "pat"},
+        {"action": "expectVisible", "as": "pat", "selector": "[data-testid=\"win-card\"][data-win-id=\"w-sam\"]"},
+        {"action": "expectVisible", "as": "pat", "selector": "[data-testid=\"win-card\"][data-win-id=\"w-pat\"] [data-testid=\"win-delete\"]"},
+        {"action": "expectCount", "as": "pat", "selector": "[data-testid=\"win-card\"][data-win-id=\"w-sam\"] [data-testid=\"win-delete\"]", "count": 0},
+        {"action": "open", "as": "steward"},
+        {"action": "expectVisible", "as": "steward", "selector": "[data-testid=\"win-card\"][data-win-id=\"w-sam\"] [data-testid=\"win-delete\"]"},
+        {"action": "expectVisible", "as": "steward", "selector": "[data-testid=\"win-card\"][data-win-id=\"w-pat\"] [data-testid=\"win-delete\"]"}
+      ]
     }
   ]
 }

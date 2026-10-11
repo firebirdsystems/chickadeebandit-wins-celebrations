@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import {
   VALID_EMOJIS, CATEGORIES, categoryLabel,
   sortWinsByDate, reactionSummary, memberReacted,
-  commentsForWin, canDeleteWin, canDeleteComment,
+  commentsForWin, canDeleteWin, canDeleteComment, supervisesWins, supervisesComments, restoreRows,
   esc, memberColor, initial, AVATAR_COLORS, isAdult, searchableFields,
 } from "../src/logic.js";
 
@@ -192,8 +192,8 @@ describe("canDeleteComment", () => {
   });
 
   it("returns true for an adult moderating another member's comment", () => {
-    // win_comments inherits the parent win's rules, so the adult bypass came
-    // back here with it.
+    // win_comments declares adults_bypass, which is what lets a supervisor
+    // remove a note they did not write.
     expect(canDeleteComment(makeComment({ author_id: "m2" }), ADULT)).toBe(true);
   });
 
@@ -254,5 +254,62 @@ describe("searchableFields", () => {
   it("matches on the body, where the story of a win actually lives", () => {
     const fields = searchableFields({ title: "Passed!", body: "grade 5 clarinet, first try", category: "school" });
     expect(fields).toContain("grade 5 clarinet, first try");
+  });
+});
+
+// ── supervision in a shared space ─────────────────────────────────────────────
+describe("delete gates outside a household", () => {
+  const participant = { tenantKind: "shared_space", spaceKind: "general", isAdmin: false };
+  const steward = { tenantKind: "shared_space", spaceKind: "general", isAdmin: true };
+  const coparent = { tenantKind: "shared_space", spaceKind: "coparenting", isAdmin: true };
+
+  it("a participant adult deletes only their own win and their own note", () => {
+    expect(canDeleteWin(makeWin({ author_id: "m9" }), ADULT, participant)).toBe(false);
+    expect(canDeleteWin(makeWin({ author_id: ADULT.id }), ADULT, participant)).toBe(true);
+    expect(canDeleteComment(makeComment({ author_id: "m9" }), ADULT, participant)).toBe(false);
+    expect(canDeleteComment(makeComment({ author_id: ADULT.id }), ADULT, participant)).toBe(true);
+  });
+
+  it("the steward deletes anyone's win and note", () => {
+    expect(canDeleteWin(makeWin({ author_id: "m9" }), ADULT, steward)).toBe(true);
+    expect(canDeleteComment(makeComment({ author_id: "m9" }), ADULT, steward)).toBe(true);
+  });
+
+  it("in a co-parenting space a steward supervises wins but not the other parent's notes", () => {
+    expect(supervisesWins(ADULT, coparent)).toBe(true);
+    expect(supervisesComments(ADULT, coparent)).toBe(false);
+    expect(canDeleteComment(makeComment({ author_id: "m9" }), ADULT, coparent)).toBe(false);
+  });
+
+  it("a household is the default, where being an admin adds nothing for a child", () => {
+    expect(supervisesWins({ id: "k", role: "child" }, { tenantKind: "household", isAdmin: true })).toBe(false);
+    expect(supervisesComments(ADULT)).toBe(true);
+  });
+});
+
+// ── putting back a refused delete ─────────────────────────────────────────────
+describe("restoreRows", () => {
+  const row = id => ({ id });
+  const before = ["a", "b", "c", "d"].map(row);
+
+  it("returns a removed row to its old place", () => {
+    expect(restoreRows(["a", "c", "d"].map(row), [row("b")], before).map(r => r.id)).toEqual(["a", "b", "c", "d"]);
+    expect(restoreRows(["a", "b", "c"].map(row), [row("d")], before).map(r => r.id)).toEqual(["a", "b", "c", "d"]);
+    expect(restoreRows(["b", "c", "d"].map(row), [row("a")], before).map(r => r.id)).toEqual(["a", "b", "c", "d"]);
+  });
+
+  it("leaves another delete that succeeded in the meantime deleted", () => {
+    // A and B were both removed; B's delete landed, A's was refused.
+    expect(restoreRows(["c", "d"].map(row), [row("a")], before).map(r => r.id)).toEqual(["a", "c", "d"]);
+  });
+
+  it("keeps a row added while the request was out, where it was", () => {
+    expect(restoreRows(["new", "a", "c", "d"].map(row), [row("b")], before).map(r => r.id)).toEqual(["new", "a", "b", "c", "d"]);
+  });
+
+  it("restores several rows of one win, and never duplicates one already back", () => {
+    expect(restoreRows(["a", "d"].map(row), [row("c"), row("b")], before).map(r => r.id)).toEqual(["a", "b", "c", "d"]);
+    const current = ["a", "b"].map(row);
+    expect(restoreRows(current, [row("b")], before).map(r => r.id)).toEqual(["a", "b"]);
   });
 });

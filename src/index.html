@@ -379,20 +379,23 @@
 </div>
 
 <script type="module">
-import { memberColor, initial, esc, isAdult, formatRelativeDate, hubConfirm, searchMatch, logHubActivity, glyph, chickadee } from "/hub-sdk.js";
+import { memberColor, initial, esc, isAdult, formatRelativeDate, hubConfirm, hubAlert, searchMatch, logHubActivity, glyph, chickadee } from "/hub-sdk.js";
 
 // The page heading is static markup; its mark comes from the SDK.
 document.getElementById("page-glyph").innerHTML = glyph("trophy");
 import {
   VALID_EMOJIS, CATEGORIES, categoryLabel,
   sortWinsByDate, reactionSummary, memberReacted,
-  commentsForWin, canDeleteWin, canDeleteComment, searchableFields,
+  commentsForWin, canDeleteWin, canDeleteComment, searchableFields, restoreRows,
 } from "./logic.js";
 
 const CONTEXT    = window.__CONTEXT_URL    ?? "";
 const DB         = window.__DB_URL         ?? "";
 const APP_ID     = window.__APP_ID         ?? "wins-celebrations";
 let   ME         = window.__CURRENT_MEMBER ?? null;
+// Where the app is running, for the delete gates that differ between a
+// household and a shared space (see logic.js supervisesWins).
+const TENANT = { tenantKind: window.__TENANT_KIND ?? "household", spaceKind: window.__SPACE_KIND ?? null, isAdmin: window.__IS_ADMIN === true };
 const EVENTS_URL = window.__EVENTS_URL     ?? "/api/events";
 
 let members   = [];
@@ -553,7 +556,7 @@ function renderWin(win) {
   const summary   = reactionSummary(reactions, win.id);
   const winComments = commentsForWin(comments, win.id);
   const catClass  = `cat-${win.category}`;
-  const canDelete = canDeleteWin(win, ME);
+  const canDelete = canDeleteWin(win, ME, TENANT);
   const commentsOpen = openCommentWinIds.has(win.id);
 
   const reactionHtml = VALID_EMOJIS.map(emoji => {
@@ -593,7 +596,7 @@ function renderWin(win) {
             <div class="win-author">${esc(author.name)}</div>
             <div class="win-time">${esc(formatRelativeDate(win.created_at))}</div>
           </div>
-          ${canDelete ? `<button class="win-delete-btn" data-action="delete-win" data-win-id="${esc(win.id)}" title="Delete" aria-label="Delete">${glyph("close")}</button>` : ""}
+          ${canDelete ? `<button class="win-delete-btn" data-testid="win-delete" data-action="delete-win" data-win-id="${esc(win.id)}" title="Delete" aria-label="Delete">${glyph("close")}</button>` : ""}
         </div>
         <div class="category-badge ${catClass}">${esc(categoryLabel(win.category))}</div>
         <div class="win-title" data-testid="win-title">${esc(win.title)}</div>
@@ -609,7 +612,7 @@ function renderWin(win) {
 
 function renderComment(c) {
   const author   = memberById(c.author_id);
-  const canDel   = canDeleteComment(c, ME);
+  const canDel   = canDeleteComment(c, ME, TENANT);
   return `
     <div class="comment" id="comment-${esc(c.id)}">
       <div class="comment-avatar" style="background:${memberColor(c.author_id, members)}">${esc(initial(author.name))}</div>
@@ -617,7 +620,7 @@ function renderComment(c) {
         <div class="comment-header">
           <span class="comment-author">${esc(author.name)}</span>
           <span class="comment-time">${esc(formatRelativeDate(c.created_at))}</span>
-          ${canDel ? `<button class="comment-delete" data-action="delete-comment" data-comment-id="${esc(c.id)}" data-win-id="${esc(c.win_id)}" title="Delete" aria-label="Delete">${glyph("close")}</button>` : ""}
+          ${canDel ? `<button class="comment-delete" data-testid="comment-delete" data-action="delete-comment" data-comment-id="${esc(c.id)}" data-win-id="${esc(c.win_id)}" title="Delete" aria-label="Delete">${glyph("close")}</button>` : ""}
         </div>
         <div class="comment-body">${esc(c.body)}</div>
       </div>
@@ -707,15 +710,28 @@ window.deleteWin = async function(winId) {
     destructive: true,
   });
   if (!confirmed) return;
+  const before = { wins, reactions, comments };
   wins      = wins.filter(w => w.id !== winId);
   reactions = reactions.filter(r => r.win_id !== winId);
   comments  = comments.filter(c => c.win_id !== winId);
   openCommentWinIds.delete(winId);
   render();
-  if (DB) Promise.all([
-    db(`DELETE FROM app_wins_celebrations__win_reactions WHERE win_id = ?`, [winId]),
-    db(`DELETE FROM app_wins_celebrations__win_comments WHERE win_id = ?`, [winId]),
-  ]).then(() => db(`DELETE FROM app_wins_celebrations__wins WHERE id = ?`, [winId]));
+  if (!DB) return;
+  try {
+    // One statement: the manifest's delete_cascades removes the win's
+    // reactions and notes with it, including those the caller did not write.
+    const { changed } = await db(`DELETE FROM app_wins_celebrations__wins WHERE id = ?`, [winId]);
+    // The hub deletes nothing, without refusing, for a win the caller may not remove.
+    if (changed === 0) throw new Error("This win could not be deleted.");
+  } catch (e) {
+    // Only this win and what hung off it: the lists may have moved on while
+    // the request was out, and that must not be undone with it.
+    wins      = restoreRows(wins, before.wins.filter(w => w.id === winId), before.wins);
+    reactions = restoreRows(reactions, before.reactions.filter(r => r.win_id === winId), before.reactions);
+    comments  = restoreRows(comments, before.comments.filter(c => c.win_id === winId), before.comments);
+    render();
+    hubAlert(e.message ?? "Could not delete this win.");
+  }
 };
 
 window.deleteComment = async function(commentId, winId) {
@@ -725,9 +741,19 @@ window.deleteComment = async function(commentId, winId) {
     destructive: true,
   });
   if (!confirmed) return;
+  const before = comments;
   comments = comments.filter(c => c.id !== commentId);
   render();
-  if (DB) db(`DELETE FROM app_wins_celebrations__win_comments WHERE id = ?`, [commentId]);
+  if (!DB) return;
+  try {
+    const { changed } = await db(`DELETE FROM app_wins_celebrations__win_comments WHERE id = ?`, [commentId]);
+    // The hub deletes nothing, without refusing, for a note the caller may not remove.
+    if (changed === 0) throw new Error("This note could not be deleted.");
+  } catch (e) {
+    comments = restoreRows(comments, before.filter(c => c.id === commentId), before);
+    render();
+    hubAlert(e.message ?? "Could not delete this note.");
+  }
 };
 
 // ── Post Win modal ────────────────────────────────────────────────────────────

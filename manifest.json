@@ -59,8 +59,15 @@
       "kind": "inherit_visibility",
       "parent_table": "wins",
       "fk_column": "win_id",
-      "writer_column": "author_id"
+      "writer_column": "author_id",
+      "adults_bypass": true
     }
+  },
+  "delete_cascades": {
+    "wins": [
+      { "table": "win_reactions", "foreign_key": "win_id" },
+      { "table": "win_comments", "foreign_key": "win_id" }
+    ]
   },
   "member_references": {
     "wins": { "column": "author_id", "on_removed": "keep" },

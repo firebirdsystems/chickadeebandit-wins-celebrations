@@ -244,6 +244,43 @@
           "expect": { "status": 200, "rowCount": 1, "rowsContain": [{ "title": "edited" }] }
         }
       ]
+    },
+    {
+      "name": "an adult can delete a note someone else wrote on a win; a child can delete only their own",
+      "members": {"parent": "adult", "other": "adult", "kid": "child"},
+      "steps": [
+        {"action": "seedRaw", "sql": "INSERT INTO app_wins_celebrations__wins (id, author_id, title, visibility, created_at) VALUES (?, ?, ?, 'everyone', ?)", "params": ["w1", "{{kid}}", "Kid's win", "2026-01-01T00:00:00Z"]},
+        {"action": "seedRaw", "sql": "INSERT INTO app_wins_celebrations__win_comments (id, win_id, author_id, body, created_at) VALUES (?, ?, ?, ?, ?)", "params": ["c-kid", "w1", "{{kid}}", "Mine", "2026-01-01T00:00:00Z"]},
+        {"action": "seedRaw", "sql": "INSERT INTO app_wins_celebrations__win_comments (id, win_id, author_id, body, created_at) VALUES (?, ?, ?, ?, ?)", "params": ["c-other", "w1", "{{other}}", "Well done", "2026-01-01T00:00:00Z"]},
+        {"action": "db", "as": "kid", "sql": "DELETE FROM app_wins_celebrations__win_comments WHERE id = ? RETURNING id", "params": ["c-other"], "expect": {"status": 200, "rowCount": 0}},
+        {"action": "db", "as": "parent", "sql": "DELETE FROM app_wins_celebrations__win_comments WHERE id = ? RETURNING id", "params": ["c-other"], "expect": {"status": 200, "rowCount": 1}},
+        {"action": "db", "as": "kid", "sql": "DELETE FROM app_wins_celebrations__win_comments WHERE id = ? RETURNING id", "params": ["c-kid"], "expect": {"status": 200, "rowCount": 1}}
+      ]
+    },
+    {
+      "name": "in a shared space only the steward can delete another member's note; a participant adult cannot",
+      "context": "shared_space",
+      "members": {"a": "adult", "b": "adult", "steward": "admin"},
+      "steps": [
+        {"action": "seedRaw", "sql": "INSERT INTO app_wins_celebrations__wins (id, author_id, title, visibility, created_at) VALUES (?, ?, ?, 'everyone', ?)", "params": ["w-b", "{{b}}", "B's win", "2026-01-01T00:00:00Z"]},
+        {"action": "seedRaw", "sql": "INSERT INTO app_wins_celebrations__win_comments (id, win_id, author_id, body, created_at) VALUES (?, ?, ?, ?, ?)", "params": ["c-b", "w-b", "{{b}}", "B's note", "2026-01-01T00:00:00Z"]},
+        {"action": "db", "as": "a", "sql": "DELETE FROM app_wins_celebrations__win_comments WHERE id = ? RETURNING id", "params": ["c-b"], "expect": {"status": 200, "rowCount": 0}},
+        {"action": "db", "as": "steward", "sql": "DELETE FROM app_wins_celebrations__win_comments WHERE id = ? RETURNING id", "params": ["c-b"], "expect": {"status": 200, "rowCount": 1}}
+      ]
+    },
+    {
+      "name": "in a shared space a participant deletes their own win, and other members' reactions and notes on it go too",
+      "context": "shared_space",
+      "members": {"a": "adult", "b": "adult", "steward": "admin"},
+      "steps": [
+        {"action": "seedRaw", "sql": "INSERT INTO app_wins_celebrations__wins (id, author_id, title, visibility, created_at) VALUES (?, ?, ?, 'everyone', ?), (?, ?, ?, 'everyone', ?)", "params": ["w-a", "{{a}}", "A's win", "2026-01-01T00:00:00Z", "w-keep", "{{a}}", "Another", "2026-01-02T00:00:00Z"]},
+        {"action": "seedRaw", "sql": "INSERT INTO app_wins_celebrations__win_reactions (id, win_id, member_id, emoji, created_at) VALUES (?, ?, ?, ?, ?), (?, ?, ?, ?, ?)", "params": ["r-b", "w-a", "{{b}}", "🎉", "2026-01-01T00:00:00Z", "r-keep", "w-keep", "{{b}}", "🎉", "2026-01-02T00:00:00Z"]},
+        {"action": "seedRaw", "sql": "INSERT INTO app_wins_celebrations__win_comments (id, win_id, author_id, body, created_at) VALUES (?, ?, ?, ?, ?)", "params": ["c-b", "w-a", "{{b}}", "Well done", "2026-01-01T00:00:00Z"]},
+        {"action": "db", "as": "b", "sql": "DELETE FROM app_wins_celebrations__wins WHERE id = ? RETURNING id", "params": ["w-a"], "expect": {"status": 200, "rowCount": 0}},
+        {"action": "db", "as": "a", "sql": "DELETE FROM app_wins_celebrations__wins WHERE id = ? RETURNING id", "params": ["w-a"], "expect": {"status": 200, "rowCount": 1}},
+        {"action": "db", "as": "steward", "sql": "SELECT id FROM app_wins_celebrations__win_reactions", "expect": {"status": 200, "rowCount": 1, "rowsContain": [{"id": "r-keep"}]}},
+        {"action": "db", "as": "steward", "sql": "SELECT id FROM app_wins_celebrations__win_comments", "expect": {"status": 200, "rowCount": 0}}
+      ]
     }
   ]
 }

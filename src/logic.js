@@ -32,6 +32,28 @@ export function reactionsForWin(reactions, winId) {
   return reactions.filter(r => r.win_id === winId);
 }
 
+/**
+ * Put back rows an optimistic delete removed, after the hub refused it. Only
+ * those rows: the list may have changed while the request was out (another
+ * delete that did succeed, a new post), and restoring an earlier copy of the
+ * whole list would undo that. Each row goes back ahead of whatever followed
+ * it in `order`, the list as it stood before the delete, so rows added since
+ * keep their place; a row already present is left alone.
+ */
+export function restoreRows(current, removed, order) {
+  const rank = new Map(order.map((r, i) => [r.id, i]));
+  const out = [...current];
+  const back = removed
+    .filter(r => !out.some(x => x.id === r.id))
+    .sort((x, y) => (rank.get(x.id) ?? Infinity) - (rank.get(y.id) ?? Infinity));
+  for (const row of back) {
+    const mine = rank.get(row.id) ?? Infinity;
+    const next = out.findIndex(x => rank.has(x.id) && rank.get(x.id) > mine);
+    if (next === -1) out.push(row); else out.splice(next, 0, row);
+  }
+  return out;
+}
+
 export function commentsForWin(comments, winId) {
   return comments.filter(c => c.win_id === winId);
 }
@@ -42,19 +64,34 @@ export function commentsForWin(comments, winId) {
 // bypass entirely — so in a board children post to, a parent could not take
 // anything down, and content from a member who had since left the household
 // could never be deleted by anyone at all. Dropping the flag restores the
-// platform default (adults supervise; in a shared space, the steward does),
-// and `win_comments` inherits its parent's rules.
+// platform default (adults supervise; in a shared space, the steward does).
+// `win_comments` does not inherit that: a child table is writer-only unless
+// it declares `adults_bypass`, which this app's manifest does.
 //
-// Keep these gates in sync with the policy — a delete button that earns a
-// silent 403 is worse than no button.
-export function canDeleteWin(win, me) {
-  if (!me) return false;
-  return me.id === win.author_id || isAdult(me);
+// Keep these gates in sync with the policy — a delete button that changes
+// nothing is worse than no button.
+
+/** Supervises wins: every adult in a household, the steward in a shared space. */
+export function supervisesWins(me, { tenantKind = "household", isAdmin = false } = {}) {
+  return tenantKind === "household" ? isAdult(me) : isAdmin === true;
 }
 
-export function canDeleteComment(comment, me) {
+/**
+ * Supervises notes on wins. The same people as wins, except in a co-parenting
+ * space, where the hub lets neither parent remove what the other wrote.
+ */
+export function supervisesComments(me, tenant = {}) {
+  return tenant.spaceKind !== "coparenting" && supervisesWins(me, tenant);
+}
+
+export function canDeleteWin(win, me, tenant) {
   if (!me) return false;
-  return me.id === comment.author_id || isAdult(me);
+  return me.id === win.author_id || supervisesWins(me, tenant);
+}
+
+export function canDeleteComment(comment, me, tenant) {
+  if (!me) return false;
+  return me.id === comment.author_id || supervisesComments(me, tenant);
 }
 
 /**
