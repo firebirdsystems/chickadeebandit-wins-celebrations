@@ -693,12 +693,12 @@ window.toggleReaction = function(winId, emoji) {
     const mine = reactions.filter(r => r.win_id === winId && r.member_id === ME.id && r.emoji === emoji);
     reactions = reactions.filter(r => !mine.includes(r));
     if (DB) db(`DELETE FROM app_wins_celebrations__win_reactions WHERE win_id = ? AND member_id = ? AND emoji = ?`, [winId, ME.id, emoji])
-      .catch(e => { reactions.push(...mine); render(); hubAlert(e.message || "That reaction could not be removed."); });
+      .catch(e => { reactions.push(...mine); render(); console.error(e); hubAlert("Couldn’t remove your reaction — try again."); });
   } else {
     const id = crypto.randomUUID();
     reactions.push({ id, win_id: winId, member_id: ME.id, emoji, created_at: new Date().toISOString() });
     if (DB) db(`INSERT INTO app_wins_celebrations__win_reactions (id, win_id, member_id, emoji, created_at) VALUES (?, ?, ?, ?, ?)`, [id, winId, ME.id, emoji, new Date().toISOString()])
-      .catch(e => { reactions = reactions.filter(r => r.id !== id); render(); hubAlert(e.message || "That reaction could not be saved."); });
+      .catch(e => { reactions = reactions.filter(r => r.id !== id); render(); console.error(e); hubAlert("Couldn’t save your reaction — try again."); });
   }
   render();
 };
@@ -721,7 +721,8 @@ window.submitComment = function(winId) {
       // Hand the text back so it is not lost with the failed save.
       const again = document.getElementById(`comment-input-${winId}`);
       if (again && !again.value) again.value = body;
-      hubAlert(e.message || "That note could not be saved.");
+      console.error(e);
+      hubAlert("Couldn’t save your note — try again.");
     });
 };
 
@@ -751,7 +752,8 @@ window.deleteWin = async function(winId) {
     // win or it was already gone. Only the hub knows which.
     if (changed === 0) failure = "This win could not be deleted.";
   } catch (e) {
-    failure = e.message ?? "Could not delete this win.";
+    console.error(e);
+    failure = "Couldn’t delete the win — try again.";
   }
   deletingWins.delete(winId);
   if (!failure) return;
@@ -784,7 +786,8 @@ window.deleteComment = async function(commentId, winId) {
     // Nothing deleted, without a refusal: not the caller's to remove, or already gone.
     if (changed === 0) failure = "This note could not be deleted.";
   } catch (e) {
-    failure = e.message ?? "Could not delete this note.";
+    console.error(e);
+    failure = "Couldn’t delete the note — try again.";
   }
   deletingComments.delete(commentId);
   if (!failure) return;
@@ -896,22 +899,31 @@ window.submitWin = async function() {
   const id  = crypto.randomUUID();
   const now = new Date().toISOString();
   const authorName = members.find(m => m.id === ME.id)?.name ?? "Someone";
+
+  if (DB) {
+    // The form stays open until the hub has the win: nothing is drawn or
+    // announced for one it did not keep, and what was typed is left in place
+    // to send again.
+    const btn = modalEl?.querySelector('[data-testid="win-submit"]');
+    if (btn?.disabled) return;
+    if (btn) btn.disabled = true;
+    try {
+      await db(`INSERT INTO app_wins_celebrations__wins (id, author_id, title, body, category, created_at) VALUES (?, ?, ?, ?, ?, ?)`,
+        [id, ME.id, title, body, category, now]);
+    } catch (e) {
+      console.error(e);
+      hubAlert("Couldn’t post your win — try again.");
+      return;
+    } finally {
+      if (btn) btn.disabled = false;
+    }
+  }
   wins.unshift({ id, author_id: ME.id, title, body, category, created_at: now });
   closeModal();
   render();
   document.getElementById(`win-${id}`)?.scrollIntoView({ behavior: "smooth", block: "start" });
 
   if (DB) {
-    // Nothing is announced for a win the hub did not keep.
-    try {
-      await db(`INSERT INTO app_wins_celebrations__wins (id, author_id, title, body, category, created_at) VALUES (?, ?, ?, ?, ?, ?)`,
-        [id, ME.id, title, body, category, now]);
-    } catch (e) {
-      wins = wins.filter(w => w.id !== id);
-      render();
-      hubAlert(e.message || "That win could not be posted.");
-      return;
-    }
     publishEvent("win.posted", id, { win_id: id, title, category });
     // A win belongs in the household's human-readable feed — that was the
     // conclusion of the note that used to sit at the top of this section, which
