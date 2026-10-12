@@ -93,6 +93,8 @@
     }
     .empty .trophy { margin-bottom: 12px; }
     .empty p { font-size: 0.95rem; }
+    .load-error { margin: 0 0 12px; padding: 10px 14px; border-radius: 10px; background: var(--hub-tint-danger, #fee2e2); color: var(--hub-tint-danger-fg, #b91c1c); font-size: 0.9rem; display: flex; gap: 10px; align-items: center; justify-content: space-between; }
+    .load-error-retry { background: none; border: 1px solid currentColor; border-radius: 8px; padding: 5px 10px; font: inherit; font-weight: 600; color: inherit; cursor: pointer; flex-shrink: 0; }
 
     /* ── Win card ───────────────────────────────────────── */
     .win-card {
@@ -414,12 +416,12 @@ async function db(sql, params = []) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ sql, params }),
   });
-  const json = await res.json();
+  const json = await res.json().catch(() => null);
   // The hub reports a refused write as a JSON body with an `error` key
   // (403 row policy, 400 bad statement, 507 over quota). fetch() does not
   // reject on those, so without this throw every caller's rollback and
   // error toast below is unreachable code.
-  if (!res.ok || json.error) throw new Error(json.error || `Database request failed (${res.status})`);
+  if (!res.ok || !json || typeof json !== "object" || json.error) throw new Error(json?.error || `Database request failed (${res.status})`);
   return json;
 }
 
@@ -434,10 +436,12 @@ async function loadMembers() {
     ];
     return;
   }
-  try {
-    const res = await fetch(`${CONTEXT}?keys=family.members`);
-    members = ((await res.json())["family.members"]) ?? [];
-  } catch { members = []; }
+  // A roster that could not be read is a failed load, not an empty household.
+  const res = await fetch(`${CONTEXT}?keys=family.members`);
+  if (!res.ok) throw new Error(`context ${res.status}`);
+  const json = await res.json();
+  if (!json || typeof json !== "object" || (Array.isArray(json.$errors) && json.$errors.includes("family.members"))) throw new Error("context: unexpected response");
+  members = json["family.members"] ?? [];
 }
 
 async function loadWins() {
@@ -525,6 +529,9 @@ document.addEventListener("input", (e) => {
   render();
 });
 
+// True from a failed first load until a load succeeds: "No wins yet" would be a guess.
+let loadFailed = false;
+
 function render() {
   const feed = document.getElementById("feed");
   // Only worth offering the box once there is a feed to search.
@@ -539,6 +546,11 @@ function render() {
     return;
   }
 
+  const loadError = loadFailed
+    ? `<div class="load-error" data-testid="load-error" role="alert"><span>Couldn’t load wins.</span> <button type="button" class="load-error-retry" data-testid="load-retry">Try again</button></div>`
+    : "";
+  if (sorted.length === 0 && loadFailed) { feed.innerHTML = loadError; return; }
+
   if (sorted.length === 0) {
     feed.innerHTML = `
       <div class="empty">
@@ -548,7 +560,7 @@ function render() {
     return;
   }
 
-  feed.innerHTML = sorted.map(win => renderWin(win)).join("");
+  feed.innerHTML = loadError + sorted.map(win => renderWin(win)).join("");
 }
 
 function renderWin(win) {
@@ -678,12 +690,15 @@ window.toggleReaction = function(winId, emoji) {
   if (win?.author_id === ME.id) return;
   const already = memberReacted(reactions, winId, ME.id, emoji);
   if (already) {
-    reactions = reactions.filter(r => !(r.win_id === winId && r.member_id === ME.id && r.emoji === emoji));
-    if (DB) db(`DELETE FROM app_wins_celebrations__win_reactions WHERE win_id = ? AND member_id = ? AND emoji = ?`, [winId, ME.id, emoji]);
+    const mine = reactions.filter(r => r.win_id === winId && r.member_id === ME.id && r.emoji === emoji);
+    reactions = reactions.filter(r => !mine.includes(r));
+    if (DB) db(`DELETE FROM app_wins_celebrations__win_reactions WHERE win_id = ? AND member_id = ? AND emoji = ?`, [winId, ME.id, emoji])
+      .catch(e => { reactions.push(...mine); render(); hubAlert(e.message || "That reaction could not be removed."); });
   } else {
     const id = crypto.randomUUID();
     reactions.push({ id, win_id: winId, member_id: ME.id, emoji, created_at: new Date().toISOString() });
-    if (DB) db(`INSERT INTO app_wins_celebrations__win_reactions (id, win_id, member_id, emoji, created_at) VALUES (?, ?, ?, ?, ?)`, [id, winId, ME.id, emoji, new Date().toISOString()]);
+    if (DB) db(`INSERT INTO app_wins_celebrations__win_reactions (id, win_id, member_id, emoji, created_at) VALUES (?, ?, ?, ?, ?)`, [id, winId, ME.id, emoji, new Date().toISOString()])
+      .catch(e => { reactions = reactions.filter(r => r.id !== id); render(); hubAlert(e.message || "That reaction could not be saved."); });
   }
   render();
 };
@@ -699,7 +714,15 @@ window.submitComment = function(winId) {
   input.value = "";
   render();
   if (DB) db(`INSERT INTO app_wins_celebrations__win_comments (id, win_id, author_id, body, created_at) VALUES (?, ?, ?, ?, ?)`,
-    [id, winId, ME.id, body, now]);
+    [id, winId, ME.id, body, now])
+    .catch(e => {
+      comments = comments.filter(c => c.id !== id);
+      render();
+      // Hand the text back so it is not lost with the failed save.
+      const again = document.getElementById(`comment-input-${winId}`);
+      if (again && !again.value) again.value = body;
+      hubAlert(e.message || "That note could not be saved.");
+    });
 };
 
 window.deleteWin = async function(winId) {
@@ -711,27 +734,36 @@ window.deleteWin = async function(winId) {
   });
   if (!confirmed) return;
   const before = { wins, reactions, comments };
+  const wasOpen = openCommentWinIds.has(winId);
   wins      = wins.filter(w => w.id !== winId);
   reactions = reactions.filter(r => r.win_id !== winId);
   comments  = comments.filter(c => c.win_id !== winId);
   openCommentWinIds.delete(winId);
   render();
   if (!DB) return;
+  deletingWins.add(winId);
+  let failure = null;
   try {
     // One statement: the manifest's delete_cascades removes the win's
     // reactions and notes with it, including those the caller did not write.
     const { changed } = await db(`DELETE FROM app_wins_celebrations__wins WHERE id = ?`, [winId]);
-    // The hub deletes nothing, without refusing, for a win the caller may not remove.
-    if (changed === 0) throw new Error("This win could not be deleted.");
+    // Nothing deleted, without a refusal: either the caller may not remove this
+    // win or it was already gone. Only the hub knows which.
+    if (changed === 0) failure = "This win could not be deleted.";
   } catch (e) {
-    // Only this win and what hung off it: the lists may have moved on while
-    // the request was out, and that must not be undone with it.
+    failure = e.message ?? "Could not delete this win.";
+  }
+  deletingWins.delete(winId);
+  if (!failure) return;
+  await settleFailedDelete(() => {
     wins      = restoreRows(wins, before.wins.filter(w => w.id === winId), before.wins);
     reactions = restoreRows(reactions, before.reactions.filter(r => r.win_id === winId), before.reactions);
     comments  = restoreRows(comments, before.comments.filter(c => c.win_id === winId), before.comments);
-    render();
-    hubAlert(e.message ?? "Could not delete this win.");
-  }
+  });
+  if (!wins.some(w => w.id === winId)) return;   // already gone: nothing to report
+  if (wasOpen) openCommentWinIds.add(winId);
+  render();
+  hubAlert(failure);
 };
 
 window.deleteComment = async function(commentId, winId) {
@@ -745,16 +777,43 @@ window.deleteComment = async function(commentId, winId) {
   comments = comments.filter(c => c.id !== commentId);
   render();
   if (!DB) return;
+  deletingComments.add(commentId);
+  let failure = null;
   try {
     const { changed } = await db(`DELETE FROM app_wins_celebrations__win_comments WHERE id = ?`, [commentId]);
-    // The hub deletes nothing, without refusing, for a note the caller may not remove.
-    if (changed === 0) throw new Error("This note could not be deleted.");
+    // Nothing deleted, without a refusal: not the caller's to remove, or already gone.
+    if (changed === 0) failure = "This note could not be deleted.";
   } catch (e) {
-    comments = restoreRows(comments, before.filter(c => c.id === commentId), before);
-    render();
-    hubAlert(e.message ?? "Could not delete this note.");
+    failure = e.message ?? "Could not delete this note.";
   }
+  deletingComments.delete(commentId);
+  if (!failure) return;
+  await settleFailedDelete(() => {
+    comments = restoreRows(comments, before.filter(c => c.id === commentId), before);
+  });
+  if (comments.some(c => c.id === commentId)) hubAlert(failure);
 };
+
+// Deletes still on their way to the hub. A re-read while one is out would
+// bring its row back, so those rows are kept out of whatever is read.
+const deletingWins = new Set();
+const deletingComments = new Set();
+
+/**
+ * After a delete that did not go through: show what the hub now holds, which
+ * tells "refused" (the row is still there) from "already gone" (it is not).
+ * If the hub cannot be read either, put back just the rows this delete took
+ * out, with `restore`.
+ */
+async function settleFailedDelete(restore) {
+  try {
+    await loadWins();
+    wins      = wins.filter(w => !deletingWins.has(w.id));
+    reactions = reactions.filter(r => !deletingWins.has(r.win_id));
+    comments  = comments.filter(c => !deletingWins.has(c.win_id) && !deletingComments.has(c.id));
+  } catch { restore(); }
+  render();
+}
 
 // ── Post Win modal ────────────────────────────────────────────────────────────
 // `name` tags the dialog so a UI scenario can wait on the modal it opened
@@ -825,7 +884,7 @@ window.selectCat = function(btn) {
   btn.classList.add("selected");
 };
 
-window.submitWin = function() {
+window.submitWin = async function() {
   const title    = document.getElementById("f-title").value.trim();
   const body     = document.getElementById("f-body").value.trim();
   const catEl    = document.querySelector(".cat-pill.selected");
@@ -843,8 +902,16 @@ window.submitWin = function() {
   document.getElementById(`win-${id}`)?.scrollIntoView({ behavior: "smooth", block: "start" });
 
   if (DB) {
-    db(`INSERT INTO app_wins_celebrations__wins (id, author_id, title, body, category, created_at) VALUES (?, ?, ?, ?, ?, ?)`,
-      [id, ME.id, title, body, category, now]);
+    // Nothing is announced for a win the hub did not keep.
+    try {
+      await db(`INSERT INTO app_wins_celebrations__wins (id, author_id, title, body, category, created_at) VALUES (?, ?, ?, ?, ?, ?)`,
+        [id, ME.id, title, body, category, now]);
+    } catch (e) {
+      wins = wins.filter(w => w.id !== id);
+      render();
+      hubAlert(e.message || "That win could not be posted.");
+      return;
+    }
     publishEvent("win.posted", id, { win_id: id, title, category });
     // A win belongs in the household's human-readable feed — that was the
     // conclusion of the note that used to sit at the top of this section, which
@@ -885,13 +952,18 @@ function handleDeepLink() {
 }
 
 // ── Init ─────────────────────────────────────────────────────────────────────
-(async () => {
-  setupFeedDelegation();
-  await Promise.all([loadMembers(), loadWins()]);
+async function firstLoad() {
+  try { await Promise.all([loadMembers(), loadWins()]); loadFailed = false; } catch { loadFailed = true; }
   if (!ME && !DB) ME = members[0] ?? null;
   handleDeepLink();
   render();
-})();
+}
+
+setupFeedDelegation();
+document.addEventListener("click", (e) => {
+  if (e.target.closest('[data-testid="load-retry"]')) firstLoad();
+});
+firstLoad();
 </script>
 </body>
 </html>

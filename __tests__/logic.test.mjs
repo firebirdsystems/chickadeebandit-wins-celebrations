@@ -307,6 +307,12 @@ describe("restoreRows", () => {
     expect(restoreRows(["new", "a", "c", "d"].map(row), [row("b")], before).map(r => r.id)).toEqual(["new", "a", "b", "c", "d"]);
   });
 
+  it("keeps a row appended while the request was out after the restored one", () => {
+    // Notes are appended: the last note's refused delete must not land after a newer note.
+    expect(restoreRows(["a", "b", "c", "new"].map(row), [row("d")], before).map(r => r.id)).toEqual(["a", "b", "c", "d", "new"]);
+    expect(restoreRows(["new"].map(row), [row("a")], before).map(r => r.id)).toEqual(["new", "a"]);
+  });
+
   it("restores several rows of one win, and never duplicates one already back", () => {
     expect(restoreRows(["a", "d"].map(row), [row("c"), row("b")], before).map(r => r.id)).toEqual(["a", "b", "c", "d"]);
     const current = ["a", "b"].map(row);

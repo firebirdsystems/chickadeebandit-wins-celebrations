@@ -36,9 +36,11 @@ export function reactionsForWin(reactions, winId) {
  * Put back rows an optimistic delete removed, after the hub refused it. Only
  * those rows: the list may have changed while the request was out (another
  * delete that did succeed, a new post), and restoring an earlier copy of the
- * whole list would undo that. Each row goes back ahead of whatever followed
- * it in `order`, the list as it stood before the delete, so rows added since
- * keep their place; a row already present is left alone.
+ * whole list would undo that. Each row goes back beside its old neighbours
+ * from `order`, the list as it stood before the delete: straight after the
+ * nearest row that used to precede it, or failing that ahead of the first
+ * that used to follow. Rows added since keep their place whichever end they
+ * were added at; a row already present is left alone.
  */
 export function restoreRows(current, removed, order) {
   const rank = new Map(order.map((r, i) => [r.id, i]));
@@ -48,8 +50,11 @@ export function restoreRows(current, removed, order) {
     .sort((x, y) => (rank.get(x.id) ?? Infinity) - (rank.get(y.id) ?? Infinity));
   for (const row of back) {
     const mine = rank.get(row.id) ?? Infinity;
+    const prev = out.findLastIndex(x => rank.has(x.id) && rank.get(x.id) < mine);
     const next = out.findIndex(x => rank.has(x.id) && rank.get(x.id) > mine);
-    if (next === -1) out.push(row); else out.splice(next, 0, row);
+    if (prev !== -1) out.splice(prev + 1, 0, row);
+    else if (next !== -1) out.splice(next, 0, row);
+    else out.push(row);
   }
   return out;
 }

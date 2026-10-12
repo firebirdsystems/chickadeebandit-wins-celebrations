@@ -8,7 +8,7 @@ Post a win — a grade, goal, or milestone — and let the whole family cheer yo
 
 - Post wins with a note.
 - Emoji reactions and congratulations.
-- Scoped to the household.
+- Scoped to the household or shared space it is installed in.
 
 ## Install
 
