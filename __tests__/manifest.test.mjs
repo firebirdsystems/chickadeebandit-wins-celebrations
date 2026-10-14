@@ -46,7 +46,7 @@ describe("manifest.json", () => {
   // The cascade is required, not decorative — reactions and comments hang off
   // win_id, so pruning a win without them orphans both tables permanently.
   it("expires wins after two years, taking their reactions and comments with them", () => {
-    const retain = manifest.row_policies?.wins?.retain_days;
+    const retain = manifest.retention?.wins;
     expect(retain?.default).toBe(730);
     expect(retain?.timestamp_column).toBe("created_at");
     expect(retain?.override_key).toBe("win_history");
