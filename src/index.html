@@ -389,6 +389,7 @@ import {
   VALID_EMOJIS, CATEGORIES, categoryLabel,
   sortWinsByDate, reactionSummary, memberReacted,
   commentsForWin, canDeleteWin, canDeleteComment, searchableFields, restoreRows,
+  outcomeUnknown, storedDiffers, SAVED_AS_FIRST,
 } from "./logic.js";
 
 const CONTEXT    = window.__CONTEXT_URL    ?? "";
@@ -421,7 +422,9 @@ async function db(sql, params = []) {
   // (403 row policy, 400 bad statement, 507 over quota). fetch() does not
   // reject on those, so without this throw every caller's rollback and
   // error toast below is unreachable code.
-  if (!res.ok || !json || typeof json !== "object" || json.error) throw new Error(json?.error || `Database request failed (${res.status})`);
+  if (!res.ok || !json || typeof json !== "object" || json.error) {
+    throw Object.assign(new Error(json?.error || `Database request failed (${res.status})`), { status: res.status, code: json?.code });
+  }
   return json;
 }
 
@@ -896,9 +899,15 @@ window.submitWin = async function() {
   if (!title) { document.getElementById("f-title").focus(); return; }
   if (!ME)    { closeModal(); return; }
 
-  const id  = crypto.randomUUID();
+  // The id is the open form's, minted on its first Post and sent on every
+  // retry: a try whose answer was lost may have stored the win, and a second
+  // press must find it rather than post another and alert everyone twice.
+  const host = modalEl;
+  const id  = host ? (host.dataset.winId ||= crypto.randomUUID()) : crypto.randomUUID();
   const now = new Date().toISOString();
   const authorName = members.find(m => m.id === ME.id)?.name ?? "Someone";
+  let win = { id, author_id: ME.id, title, body, category, created_at: now };
+  let note = "";
 
   if (DB) {
     // The form stays open until the hub has the win: nothing is drawn or
@@ -908,8 +917,29 @@ window.submitWin = async function() {
     if (btn?.disabled) return;
     if (btn) btn.disabled = true;
     try {
-      await db(`INSERT INTO app_wins_celebrations__wins (id, author_id, title, body, category, created_at) VALUES (?, ?, ?, ?, ?, ?)`,
-        [id, ME.id, title, body, category, now]);
+      try {
+        await db(`INSERT INTO app_wins_celebrations__wins (id, author_id, title, body, category, created_at) VALUES (?, ?, ?, ?, ?, ?)`,
+          [id, ME.id, title, body, category, now]);
+      } catch (e) {
+        // Unknown outcome: read the win back by the pinned id. Found means an
+        // earlier try landed and its success path never ran, so it runs now,
+        // once, as stored. Not found, or the read failed: the post fails, the
+        // id stays pinned.
+        if (!outcomeUnknown(e)) throw e;
+        let stored = null;
+        try { stored = (await db(`SELECT id, author_id, title, body, category, created_at FROM app_wins_celebrations__wins WHERE id = ?`, [id])).rows?.[0] ?? null; }
+        catch (readErr) {
+          // The id is ours: with the read-back failed, a UNIQUE answer may be this
+          // form's own first try, so nothing is known — "try again", not "already exists".
+          console.error(readErr);
+          throw new Error("create outcome unknown", { cause: e });
+        }
+        if (!stored) throw e;
+        console.error(e);
+        // Edited since that first try: what was stored is kept, and said so.
+        if (storedDiffers(stored, { title, body, category })) note = SAVED_AS_FIRST;
+        win = stored;
+      }
     } catch (e) {
       console.error(e);
       hubAlert("Couldn’t post your win — try again.");
@@ -918,13 +948,16 @@ window.submitWin = async function() {
       if (btn) btn.disabled = false;
     }
   }
-  wins.unshift({ id, author_id: ME.id, title, body, category, created_at: now });
-  closeModal();
+  if (host) delete host.dataset.winId;
+  wins = [win, ...wins.filter((w) => w.id !== win.id)];
+  // Only the form that posted is closed: another may have opened meanwhile.
+  if (modalEl === host) closeModal();
+  if (note) hubAlert(note);
   render();
   document.getElementById(`win-${id}`)?.scrollIntoView({ behavior: "smooth", block: "start" });
 
   if (DB) {
-    publishEvent("win.posted", id, { win_id: id, title, category });
+    publishEvent("win.posted", id, { win_id: id, title: win.title, category: win.category });
     // A win belongs in the household's human-readable feed — that was the
     // conclusion of the note that used to sit at the top of this section, which
     // said doing it "needs a hub change (a new ActivityType plus an allowlist
@@ -944,10 +977,10 @@ window.submitWin = async function() {
     // So: if a visibility control is ever added to this modal, this call must
     // move behind it. The activity feed is household-wide and honours no app
     // row policy — it would publish the title verbatim to everyone.
-    logHubActivity(`${authorName} posted a win: ${title}`, {
+    logHubActivity(`${authorName} posted a win: ${win.title}`, {
       deepLink: { appId: APP_ID, params: { win: id } },
     });
-    notify("New Win 🏆", `${authorName}: ${title}`);
+    notify("New Win 🏆", `${authorName}: ${win.title}`);
   }
 };
 
