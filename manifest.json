@@ -33,16 +33,7 @@
       "kind": "owner_or_visibility",
       "member_column": "author_id",
       "visibility_column": "visibility",
-      "everyone_values": ["everyone"],
-      "retain_days": {
-        "default": 730,
-        "timestamp_column": "created_at",
-        "override_key": "win_history",
-        "dependent_tables": [
-          { "table": "win_reactions", "foreign_key": "win_id" },
-          { "table": "win_comments", "foreign_key": "win_id" }
-        ]
-      }
+      "everyone_values": ["everyone"]
     },
     "win_reactions": {
       "kind": "inherit_visibility",
@@ -61,6 +52,17 @@
       "fk_column": "win_id",
       "writer_column": "author_id",
       "adults_bypass": true
+    }
+  },
+  "retention": {
+    "wins": {
+      "default": 730,
+      "timestamp_column": "created_at",
+      "override_key": "win_history",
+      "dependent_tables": [
+        { "table": "win_reactions", "foreign_key": "win_id" },
+        { "table": "win_comments", "foreign_key": "win_id" }
+      ]
     }
   },
   "delete_cascades": {
